@@ -2,9 +2,9 @@
   "name": "karasia",
   "version": "0.0.1",
   "description": "A Launcher for my Minecraft server",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "run": "electron ."
   },
   "repository": {
     "type": "git",
@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/AlexandreSama/Launcher/issues"
   },
-  "homepage": "https://github.com/AlexandreSama/Launcher#readme"
+  "homepage": "https://github.com/AlexandreSama/Launcher#readme",
+  "dependencies": {
+    "electron": "^16.0.5"
+  }
 }
