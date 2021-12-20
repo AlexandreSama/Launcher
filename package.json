@@ -1,11 +1,19 @@
 {
   "name": "karasia",
   "version": "0.0.1",
-  "description": "A Launcher for my server",
+  "description": "A Launcher for my Minecraft server",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlexandreSama/Launcher.git"
+  },
   "author": "Alexandre",
-  "license": "ISC"
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AlexandreSama/Launcher/issues"
+  },
+  "homepage": "https://github.com/AlexandreSama/Launcher#readme"
 }
