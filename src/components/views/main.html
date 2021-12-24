@@ -29,13 +29,7 @@
             <a href="#"><span class="fa fa-home mr-3"></span> Accueil</a>
           </li>
           <li>
-              <a href="#"><span class="fa fa-download mr-3 notif"><small class="d-flex align-items-center justify-content-center">5</small></span> Download</a>
-          </li>
-          <li>
-            <a href="#"><span class="fa fa-gift mr-3"></span> Gift Code</a>
-          </li>
-          <li>
-            <a href="#"><span class="fa fa-trophy mr-3"></span> Top Review</a>
+              <a href="#"><span class="fa fa-download mr-3"><small class="d-flex align-items-center justify-content-center"></small></span> Téléchargements</a>
           </li>
           <li>
             <a href="#"><span class="fa fa-cog mr-3"></span> Settings</a>
@@ -44,7 +38,7 @@
             <a href="#"><span class="fa fa-support mr-3"></span> Support</a>
           </li>
           <li>
-            <a href="#"><span class="fa fa-sign-out mr-3"></span> Sign Out</a>
+            <a href="#"><span class="fa fa-sign-out mr-3"></span> Déconnexion</a>
           </li>
         </ul>
 
@@ -52,9 +46,10 @@
 
         <!-- Page Content  -->
       <div id="content" class="p-4 p-md-5 pt-5">
-        <h2 class="mb-4">Sidebar #09</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        <h2 class="mb-4" id="ServerName">Karasia</h2>
+        <button class="btn btn-outline-dark" style="position: absolute; right: 200px;" id="DarkModeButton">Mode Nuit</button>
+        <button class="btn btn-outline-light" style="position: absolute; right: 310px;" id="LightModeButton">Mode Clair</button>
+        <button class="btn btn-outline-success" style="position: absolute; bottom: 100px; right: 200px;">Jouer !</button>
       </div>
 		</div>
 
@@ -71,6 +66,15 @@
         console.log(data)
         document.getElementById('usernamePlayer').innerHTML += data.username
         document.getElementById('PlayerSkin').style.backgroundImage = `url('https://crafatar.com/avatars/${data.uuid}')`
+      })
+
+      document.getElementById('DarkModeButton').addEventListener('click', () => {
+        document.getElementById('content').style.backgroundColor = "black"
+        document.getElementById('ServerName').style.color = 'white'
+      })
+      document.getElementById('LightModeButton').addEventListener('click', () => {
+        document.getElementById('content').style.backgroundColor = null
+        document.getElementById('ServerName').style.color = 'black'
       })
     </script>
   </body>
