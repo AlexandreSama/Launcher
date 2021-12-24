@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
   <head>
-  	<title>Login 10</title>
+  	<title>Connexion</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
@@ -10,12 +10,9 @@
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 	
     <link href="../addons/bootstrap.min.css">
-	<link rel="stylesheet" href="../addons/login.css">
+	<link rel="stylesheet" href="../addons/login/login.css">
 
-    <script src="../addons/jquery.min.js"></script>
-    <script src="../addons/bootstrap.min.js"></script>
     <script src="../addons/popper.js"></script>
-    <script src=../addons/login.js></script>
 	</head>
 
 	<body class="img js-fullheight" style="background-image: url(../images/bg.jpg);">
@@ -32,14 +29,14 @@
 		      	<h3 class="mb-4 text-center">Déjà un compte ?</h3>
 		      	<form action="#" class="signin-form">
 		      		<div class="form-group">
-		      			<input type="text" class="form-control" placeholder="Email" required>
+		      			<input type="text" class="form-control" placeholder="Email" id="emailField" required>
 		      		</div>
 	            <div class="form-group">
 	              <input id="password-field" type="password" class="form-control" placeholder="Mot de passe" required>
 	              <span toggle="#password-field" class="fa fa-fw fa-eye field-icon toggle-password"></span>
 	            </div>
 	            <div class="form-group">
-	            	<button type="submit" class="form-control btn btn-primary submit px-3">Connexion</button>
+	            	<button class="form-control btn btn-primary submit px-3" id="loginBtn">Connexion</button>
 	            </div>
 	            <div class="form-group d-md-flex">
 	            	<div class="w-50">
@@ -63,6 +60,27 @@
 		</div>
 	</section>
 
+	<script>
+		const ipc = require('electron').ipcRenderer;
+		const remote = require('electron')
+
+		document.getElementById('loginBtn').addEventListener('click', () => {
+			let email = document.getElementById('emailField').value
+			let password = document.getElementById('password-field').value
+
+			if(email && password){
+				ipc.send('login', {email, password})
+			}else{
+				remote.dialog.showErrorBox('Erreur !', 'Veuillez écrire un mot de passe ou un email !')
+			}
+		})
+
+		ipc.on('Error-Login', (event) => {
+			Remote.dialog.showErrorBox('Erreur !', 'Veuillez vérifier votre mot de passe ou votre email !')
+		})
+	</script>
+	<script>window.$ = window.jQuery = require('jquery');</script>
+	<script src=../addons/login/login.js></script>
 	</body>
 </html>
 
