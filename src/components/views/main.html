@@ -47,6 +47,7 @@
         <!-- Page Content  -->
       <div id="content" class="p-4 p-md-5 pt-5">
         <h2 class="mb-4" id="ServerName">Karasia</h2>
+        <p>Viens rejoindre un monde ou la technologie et la magie s'entremélent pour crée un monde merveilleux !</p>
         <button class="btn btn-outline-dark" style="position: absolute; right: 200px;" id="DarkModeButton">Mode Nuit</button>
         <button class="btn btn-outline-light" style="position: absolute; right: 310px;" id="LightModeButton">Mode Clair</button>
         <button class="btn btn-outline-success" style="position: absolute; bottom: 100px; right: 200px;">Jouer !</button>
@@ -62,16 +63,20 @@
       const electron = require('electron')
       const ipc = electron.ipcRenderer
 
+      //Get data (username, uuid) from user
       ipc.on('usernameData', (event, data) => {
         console.log(data)
         document.getElementById('usernamePlayer').innerHTML += data.username
         document.getElementById('PlayerSkin').style.backgroundImage = `url('https://crafatar.com/avatars/${data.uuid}')`
       })
 
+      //Dark Mode
       document.getElementById('DarkModeButton').addEventListener('click', () => {
         document.getElementById('content').style.backgroundColor = "black"
         document.getElementById('ServerName').style.color = 'white'
       })
+
+      //Light Mode
       document.getElementById('LightModeButton').addEventListener('click', () => {
         document.getElementById('content').style.backgroundColor = null
         document.getElementById('ServerName').style.color = 'black'
