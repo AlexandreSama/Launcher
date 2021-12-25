@@ -19,7 +19,7 @@ function createWindow () {
     }
   }); // on définit une taille pour notre fenêtre
 
-  mainWindow.loadURL(`file://${__dirname}/components/views/login.html`); // on doit charger un chemin absolu
+  mainWindow.loadURL(`file://${__dirname}/components/views/main.html`); // on doit charger un chemin absolu
 
   mainWindow.on('closed', () => {
     mainWindow = null;

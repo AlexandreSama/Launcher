@@ -45,11 +45,18 @@
     	</nav>
 
         <!-- Page Content  -->
-      <div id="content" class="p-4 p-md-5 pt-5">
+      <div id="content" class="p-4 p-md-5 pt-5" style="background-image: url(../images/WallpaperBackgroundMain.jpg);">
         <h2 class="mb-4" id="ServerName">Karasia</h2>
-        <p>Viens rejoindre un monde ou la technologie et la magie s'entremélent pour crée un monde merveilleux !</p>
-        <button class="btn btn-outline-dark" style="position: absolute; right: 200px;" id="DarkModeButton">Mode Nuit</button>
-        <button class="btn btn-outline-light" style="position: absolute; right: 310px;" id="LightModeButton">Mode Clair</button>
+        <p style="color: white;">Viens rejoindre un monde ou la technologie et la magie s'entremélent pour crée un monde merveilleux !</p>
+        <div class="container-fluid">
+          <div class="card" style="width: 18rem; margin-top: 100px; background-color: transparent; color: white; border: 0px;" id="CardServerStatus">
+            <div class="card-body">
+              <p id="serverStat"></p>
+              <p id="pingServer"></p>
+              <p id="playerStat"></p>
+            </div>
+          </div>
+        </div>
         <button class="btn btn-outline-success" style="position: absolute; bottom: 100px; right: 200px;">Jouer !</button>
       </div>
 		</div>
@@ -62,6 +69,10 @@
     <script>
       const electron = require('electron')
       const ipc = electron.ipcRenderer
+      const pinger = require('minecraft-pinger')
+      const util = require('minecraft-server-util');
+
+
 
       //Get data (username, uuid) from user
       ipc.on('usernameData', (event, data) => {
@@ -70,16 +81,14 @@
         document.getElementById('PlayerSkin').style.backgroundImage = `url('https://crafatar.com/avatars/${data.uuid}')`
       })
 
-      //Dark Mode
-      document.getElementById('DarkModeButton').addEventListener('click', () => {
-        document.getElementById('content').style.backgroundColor = "black"
-        document.getElementById('ServerName').style.color = 'white'
-      })
-
-      //Light Mode
-      document.getElementById('LightModeButton').addEventListener('click', () => {
-        document.getElementById('content').style.backgroundColor = null
-        document.getElementById('ServerName').style.color = 'black'
+      pinger.ping('localhost', 25565, (error, result) => {
+        if (error) return console.error(error)
+        if(result){
+          console.log(result)
+          document.getElementById('serverStat').innerHTML += "Etat du serveur : Allumé !"
+          document.getElementById('pingServer').innerHTML += `Ping du serveur : ${result['ping']}`
+          document.getElementById('playerStat').innerHTML += `Nombre de joueurs : ${result['players']['online']}`
+        }
       })
     </script>
   </body>
