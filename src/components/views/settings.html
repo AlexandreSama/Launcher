@@ -65,20 +65,26 @@
         const electron = require('electron')
         const ipc = electron.ipcRenderer
 
-        email = datas.email
-        password = datas.password
-        username = datas.username
-        uuid = datas.uuid
+        let email
+        let password
+        let username
+        let uuid
 
         //Get data (username, uuid, email & password) from user
-        ipc.on('usernameData', (event, datas) => {
-            console.log(datas)
-            document.getElementById('usernamePlayer').innerHTML += datas.username
-            document.getElementById('PlayerSkin').style.backgroundImage = `url('https://crafatar.com/avatars/${datas.uuid}')`
+        ipc.on('usernameData', (event, data) => {
+            console.log(data)
+
+            email = data.email
+            password = data.password
+            username = data.username
+            uuid = data.uuid
+
+            document.getElementById('usernamePlayer').innerHTML += data.username
+            document.getElementById('PlayerSkin').style.backgroundImage = `url('https://crafatar.com/avatars/${data.uuid}')`
         })
 
         document.getElementById('accueilButton').addEventListener('click', () => {
-            ipc.send('GoToMain')
+            ipc.send('GoToMain', {email, password, username, uuid})
         })
     </script>
 </body>

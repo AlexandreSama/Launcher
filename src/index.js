@@ -77,10 +77,14 @@ ipcMain.on('login', (event, data) => {
 })
 
 ipcMain.on('saveID', (event, data) => {
-  let ID = {"email": data.email}
-  let datsa = JSON.stringify(ID)
-  fs.mkdirSync(launcherPath)
-  fs.writeFileSync(launcherPath + 'infos.json', datsa)
+  if(fs.existsSync(launcherPath + 'infos.json')){
+
+  }else{
+    let ID = {"email": data.email}
+    let datsa = JSON.stringify(ID)
+    fs.mkdirSync(launcherPath)
+    fs.writeFileSync(launcherPath + 'infos.json', datsa)
+  }
 })
 
 //Launch the Minecraft Client
@@ -369,7 +373,8 @@ ipcMain.on('Play', async (event, data) => {
 //Change page
 ipcMain.on('GoToMain', (event, data) => {
   mainWindow.loadURL(`file://${__dirname}/components/views/main.html`)
-  let datas = {"username" : data.name, "uuid": data.uuid, "email": data.email, "password": data.password}
+  console.log(data)
+  let datas = {"username" : data.username, "uuid": data.uuid, "email": data.email, "password": data.password}
   mainWindow.webContents.once('dom-ready', () => {
     mainWindow.webContents.send('usernameData', datas)
   })
@@ -378,7 +383,7 @@ ipcMain.on('GoToMain', (event, data) => {
 //Change page
 ipcMain.on('GoToSettings', (event, data) => {
   mainWindow.loadURL(`file://${__dirname}/components/views/settings.html`)
-  let datas = {"username" : data.name, "uuid": data.uuid, "email": data.email, "password": data.password}
+  let datas = {"username" : data.userName, "uuid": data.userUUID, "email": data.userEmail, "password": data.userPaswword}
   mainWindow.webContents.once('dom-ready', () => {
     mainWindow.webContents.send('usernameData', datas)
   })
