@@ -223,7 +223,7 @@ ipcMain.on('Play', async (event, data) => {
       event.sender.send('dataDownload', (event, {type, task, total}))
     })
     launcher.on('debug', (e) => {
-      event.sender.send("dataMc", (event, e))
+      mainWindow.webContents.send('dataMc', {e})
     })
 
   }
