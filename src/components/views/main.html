@@ -123,6 +123,10 @@
       let username
       let uuid
 
+      ipc.on('dataMc', (event, data) => {
+        console.log(data)
+      })
+
       //Get data (username, uuid, email & password) from user
       ipc.on('usernameData', (event, datas) => {
         console.log(datas)

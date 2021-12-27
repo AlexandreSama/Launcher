@@ -222,6 +222,9 @@ ipcMain.on('Play', async (event, data) => {
       let total = e.total
       event.sender.send('dataDownload', (event, {type, task, total}))
     })
+    launcher.on('debug', (e) => {
+      event.sender.send("dataMc", (event, e))
+    })
 
   }
 
