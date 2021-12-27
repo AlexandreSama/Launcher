@@ -15,7 +15,7 @@ let launcherPath = app.getPath('appData') + '\\KarasiaLauncher\\'
 let launcherModsPath = app.getPath('appData') + '\\KarasiaLauncher\\mods\\'
 
 const downloader = new Downloader({
-  url: "http://localhost/modsList.json",
+  url: "http://193.168.146.71/modsList.json",
   directory: launcherPath, 
 });
 
@@ -100,7 +100,7 @@ ipcMain.on('Play', async (event, data) => {
         if(difference.length >= 1){
           difference.forEach( async element => {
             let downloaderMissedMods = new Downloader({
-              url: "http://localhost/mods/" + element,
+              url: "http://193.168.146.71/mods/" + element,
               directory: launcherModsPath
             })
 
@@ -177,7 +177,7 @@ ipcMain.on('Play', async (event, data) => {
     fs.mkdirSync(launcherModsPath)
 
     let downloaderForge = new Downloader({
-      url: "http://localhost/forge.jar",
+      url: "http://193.168.146.71/forge.jar",
       directory: launcherPath
     })
 
@@ -190,7 +190,7 @@ ipcMain.on('Play', async (event, data) => {
 
     await jsonData.forEach(element => {
       let downloaderMods = new Downloader({
-        url: "http://localhost/mods/" + element.name,
+        url: "http://193.168.146.71/mods/" + element.name,
         directory: launcherModsPath
       })
 
