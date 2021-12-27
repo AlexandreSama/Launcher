@@ -40,6 +40,11 @@ function createWindow () {
   });
   mainWindow.once('ready-to-show', () => {
     autoUpdater.checkForUpdatesAndNotify()
+    if(fs.existsSync(app.getPath('appData') + '\\KarasiaLauncher\\infos.json')){
+			let rawdata = fs.readFileSync(app.getPath('appData') + '\\KarasiaLauncher\\infos.json');
+			let student = JSON.parse(rawdata);
+      mainWindow.webContents.send('savedID', {student})
+		}
   })
 }
 
@@ -69,6 +74,13 @@ ipcMain.on('login', (event, data) => {
   }).catch(err => {
     event.sender.send('Error-Login')
   })
+})
+
+ipcMain.on('saveID', (event, data) => {
+  let ID = {"email": data.email}
+  let datsa = JSON.stringify(ID)
+  fs.mkdirSync(launcherPath)
+  fs.writeFileSync(launcherPath + 'infos.json', datsa)
 })
 
 //Launch the Minecraft Client

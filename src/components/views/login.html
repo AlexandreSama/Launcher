@@ -41,7 +41,7 @@
 	            <div class="form-group d-md-flex">
 	            	<div class="w-50">
 		            	<label class="checkbox-wrap checkbox-primary">Se souvenir de moi
-									  <input type="checkbox" checked>
+									  <input type="checkbox" checked id="saveID">
 									  <span class="checkmark"></span>
 									</label>
 								</div>
@@ -63,6 +63,12 @@
 	<script>
 		const ipc = require('electron').ipcRenderer;
 		const remote = require('electron')
+		const fs = require('fs')
+
+		ipc.on('savedID', (event, data) => {
+			console.log(data['student'].email)
+			document.getElementById('emailField').value = data['student'].email
+		})
 
 		document.getElementById('loginBtn').addEventListener('click', () => {
 			let email = document.getElementById('emailField').value
@@ -70,6 +76,9 @@
 
 			if(email && password){
 				ipc.send('login', {email, password})
+				if(document.getElementById('saveID').checked){
+					ipc.send('saveID', {email})
+				}
 			}else{
 				remote.dialog.showErrorBox('Erreur !', 'Veuillez écrire un mot de passe ou un email !')
 			}
