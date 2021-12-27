@@ -14,7 +14,7 @@ let mainWindow;
 
 let launcherPath = app.getPath('appData') + '\\KarasiaLauncher\\'
 let launcherModsPath = app.getPath('appData') + '\\KarasiaLauncher\\mods\\'
-let launcherJavaPath = app.getPath('appData') + '\\KarasiaLauncher\\Java\\'
+let launcherJavaPath = app.getPath('appData') + '\\KarasiaLauncher\\Java\\bin\\'
 
 const downloader = new Downloader({
   url: "http://193.168.146.71/modsList.json",
