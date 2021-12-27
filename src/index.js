@@ -320,6 +320,78 @@ ipcMain.on('Play', async (event, data) => {
     //If the folder for the mods isn't created (weird errors :think:)
     }else{
 
+      fs.mkdirSync(launcherModsPath)
+
+    let downloaderForge = new Downloader({
+      url: "http://193.168.146.71/forge.jar",
+      directory: launcherPath
+    })
+
+    await downloaderForge.download()
+
+    await downloader.download()
+
+    let downloadJava = new Downloader({
+      url: "http://193.168.146.71/java.zip",
+      directory: launcherJavaPath
+    })
+
+    await downloadJava.download()
+
+    var zip = new AdmZip(launcherJavaPath + 'java.zip')
+
+    zip.extractAllTo(launcherJavaPath, true)
+
+    let modsData = fs.readFileSync(launcherPath + "modsList.json")
+    let jsonData = JSON.parse(modsData)
+
+    await jsonData.forEach(element => {
+      let downloaderMods = new Downloader({
+        url: "http://193.168.146.71/mods/" + element.name,
+        directory: launcherModsPath
+      })
+
+      downloaderMods.download()
+    });
+
+    fs.unlinkSync(launcherPath + "modsList.json")
+
+    let rawdata = fs.readFileSync(launcherPath + 'infos.json');
+    let student = JSON.parse(rawdata);
+    let ram = student.options.ram
+
+    let opts = {
+      clientPackage: null,
+      authorization: Authenticator.getAuth(data.email, data.password),
+      root: launcherPath,
+      forge: launcherPath + "forge.jar",
+      javaPath: path.join(launcherJavaPath + 'bin\\java.exe'),
+      version: {
+          number: "1.12.2",
+          type: "release"
+      },
+      memory: {
+          max: ram,
+          min: "4000"
+      }
+    }
+
+    launcher.launch(opts);
+
+    launcher.on('progress', (e) => {
+      let type = e.type
+      let task = e.task
+      let total = e.total
+      event.sender.send('dataDownload', (event, {type, task, total}))
+    })
+    launcher.on('debug', (e) => {
+      mainWindow.webContents.send('dataMc', {e})
+    })
+    launcher.on('data', (e) => {
+      mainWindow.webContents.send('dataMcd', {e})
+    })
+
+
     }
   //If the folder for the launcher isn't created, create folders, download forge & mods and launch the game
   }else{
