@@ -78,9 +78,18 @@ ipcMain.on('login', (event, data) => {
 
 ipcMain.on('saveID', (event, data) => {
   if(fs.existsSync(launcherPath + 'infos.json')){
-
+    let rawdata = fs.readFileSync(launcherPath + 'infos.json');
+		let student = JSON.parse(rawdata);
+    console.log(data)
+    student.options.push({email: data})
+    let json = JSON.stringify(student)
+    fs.writeFileSync(launcherPath + 'infos.json', json)
   }else{
-    let ID = {"email": data.email}
+    let ID = {
+      options: [{
+        "email": data.email
+      }]
+    }
     let datsa = JSON.stringify(ID)
     fs.mkdirSync(launcherPath)
     fs.writeFileSync(launcherPath + 'infos.json', datsa)
@@ -390,7 +399,23 @@ ipcMain.on('GoToSettings', (event, data) => {
 })
 
 ipcMain.on('saveRam', (event, data) => {
-  
+  if(fs.existsSync(launcherPath + 'infos.json')){
+    let rawdata = fs.readFileSync(launcherPath + 'infos.json');
+		let student = JSON.parse(rawdata);
+    console.log(data)
+    student.options.push({ram: data})
+    let json = JSON.stringify(student)
+    fs.writeFileSync(launcherPath + 'infos.json', json)
+  }else{
+    let infos = {
+      options: [{
+        "ram": data
+      }]
+    }
+    let datsa = JSON.stringify(infos)
+    fs.mkdirSync(launcherPath)
+    fs.writeFileSync(launcherPath + 'infos.json', datsa)
+  }
 })
 
 ipcMain.on('app_version', (event) => {

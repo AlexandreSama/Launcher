@@ -51,28 +51,13 @@
         <!-- Page Content  -->
         <div id="content" class="p-4 p-md-5 pt-5" style="background-image: url(../images/WallpaperBackgroundMain.jpg);">
             <h2 class="mb-4" id="ServerName">Settings</h2>
-            <div class="selected-item">
-                <p>Ram sélectionné : <span>Aucune</span></p>
-            </div>
-
-            <div class="dropdown">
-                <span class="selLabel">Faite votre choix !</span>
-                <input type="hidden" name="cd-dropdown">
-                <ul class="dropdown-list">
-                    <li data-value="5">
-                        <span>5</span>
-                    </li>
-                    <li data-value="6">
-                        <span>6</span>
-                    </li>
-                    <li data-value="7">
-                        <span>7</span>
-                    </li>
-                    <li data-value="8">
-                        <span>8</span>
-                    </li>
-                </ul>
-            </div>
+            <select class="selectpicker" id="ram">
+                <option>4G</option>
+                <option>5G</option>
+                <option>6G</option>
+                <option>7G</option>
+                <option>8G</option>
+            </select>
 
             <button class="btn btn-outline-success" id="SaveRam">Sauvegarder</button>
         </div>
@@ -86,18 +71,6 @@
     <script src="../addons/main/main.js"></script>
 
     <script>
-
-        let ram 
-        $(".selLabel").click(function () {
-            $('.dropdown').toggleClass('active');
-        });
-
-        $(".dropdown-list li").click(function () {
-            $('.selLabel').text($(this).text());
-            ram = $('.selLabel').text($(this).text());
-            $('.dropdown').removeClass('active');
-            $('.selected-item p span').text($('.selLabel').text());
-        });
 
         const electron = require('electron')
         const ipc = electron.ipcRenderer
@@ -131,8 +104,9 @@
         })
 
         document.getElementById('SaveRam').addEventListener('click', () => {
-            let data = {"ram": ram}
-            ipc.send('saveRam', (data))
+            let ram = $('#ram :selected').text()
+            console.log(ram)
+            ipc.send('saveRam', (ram))
         })
     </script>
 </body>

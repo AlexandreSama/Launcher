@@ -66,8 +66,8 @@
 		const fs = require('fs')
 
 		ipc.on('savedID', (event, data) => {
-			console.log(data['student'].email)
-			document.getElementById('emailField').value = data['student'].email
+			console.log(data)
+			document.getElementById('emailField').value = data['student']['options'][0].email
 		})
 
 		document.getElementById('loginBtn').addEventListener('click', () => {
