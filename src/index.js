@@ -8,7 +8,7 @@ const launcher = new Client();
 const fs = require('fs')
 const Downloader = require("nodejs-file-downloader");
 const { autoUpdater } = require('electron-updater');
-const Unrar = require('node-unrar');
+const AdmZip = require("adm-zip");
 
 let mainWindow;
 
@@ -176,15 +176,15 @@ ipcMain.on('Play', async (event, data) => {
       }else{
 
         let downloadJava = new Downloader({
-          url: "http://193.168.146.71/java.rar",
+          url: "http://193.168.146.71/java.zip",
           directory: launcherJavaPath
         })
 
         await downloadJava.download()
 
-        let rar = new Unrar(launcherJavaPath + 'java.rar')
+        var zip = new AdmZip(launcherJavaPath + 'java.zip')
 
-        rar.extract(launcherJavaPath)
+        zip.extractAllTo(launcherJavaPath, true)
 
         fs.readdirSync(launcherModsPath).forEach(file => {
           folderMods.push(file)
@@ -295,15 +295,15 @@ ipcMain.on('Play', async (event, data) => {
     await downloader.download()
 
     let downloadJava = new Downloader({
-      url: "http://193.168.146.71/java.rar",
+      url: "http://193.168.146.71/java.zip",
       directory: launcherJavaPath
     })
 
     await downloadJava.download()
 
-    let rar = new Unrar(launcherJavaPath + 'java.rar')
+    var zip = new AdmZip(launcherJavaPath + 'java.zip')
 
-    rar.extract(launcherJavaPath)
+    zip.extractAllTo(launcherJavaPath, true)
 
     let modsData = fs.readFileSync(launcherPath + "modsList.json")
     let jsonData = JSON.parse(modsData)
