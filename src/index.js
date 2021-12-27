@@ -71,8 +71,10 @@ ipcMain.on('Play', async (event, data) => {
   let jsonMods = []
   let folderMods = []
 
+  //If the folder for the launcher is already created
   if(fs.existsSync(launcherPath)){
 
+    //If the folder for the mods is already created, check mods, download missing mods and launch the game
     if(fs.existsSync(launcherModsPath)){
 
       fs.readdirSync(launcherModsPath).forEach(file => {
@@ -101,6 +103,31 @@ ipcMain.on('Play', async (event, data) => {
             await downloaderMissedMods.download()
           })
           console.log('Mods manquant recupere !')
+
+          let opts = {
+            clientPackage: null,
+            authorization: Authenticator.getAuth(data.email, data.password),
+            root: launcherPath,
+            forge: launcherPath + "forge.jar",
+            version: {
+                number: "1.12.2",
+                type: "release"
+            },
+            memory: {
+                max: "6G",
+                min: "4G"
+            }
+          }
+
+          launcher.launch(opts);
+
+          launcher.on('progress', (e) => {
+            let type = e.type
+            let task = e.task
+            let total = e.total
+            event.sender.send('dataDownload', (event, {type, task, total}))
+          })
+          
         }else{
 
           let opts = {
@@ -131,10 +158,12 @@ ipcMain.on('Play', async (event, data) => {
       } catch (error) {
         console.log(error)
       }
-    }else{
-      
-    }
 
+    //If the folder for the mods isn't created (weird errors :think:)
+    }else{
+
+    }
+  //If the folder for the launcher isn't created, create folders, download forge & mods and launch the game
   }else{
     fs.mkdirSync(launcherPath)
     fs.mkdirSync(launcherModsPath)
