@@ -127,7 +127,7 @@ ipcMain.on('Play', async (event, data) => {
             let total = e.total
             event.sender.send('dataDownload', (event, {type, task, total}))
           })
-          
+
         }else{
 
           let opts = {
@@ -188,6 +188,8 @@ ipcMain.on('Play', async (event, data) => {
 
       downloaderMods.download()
     });
+
+    fs.unlinkSync(launcherPath + "modsList.json")
 
     let opts = {
       clientPackage: null,
