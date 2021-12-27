@@ -171,7 +171,6 @@
       // Get Launch Event
       ipc.on('dataDownload', (event, data) => {
         document.getElementById('downloadProgress').innerHTML = `Téléchargement des ${data.type} : ${data.task} / ${data.total}`
-        setBar(1)
       })
     </script>
   </body>
