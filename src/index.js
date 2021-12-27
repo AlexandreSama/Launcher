@@ -8,11 +8,13 @@ const launcher = new Client();
 const fs = require('fs')
 const Downloader = require("nodejs-file-downloader");
 const { autoUpdater } = require('electron-updater');
+const Unrar = require('node-unrar');
 
 let mainWindow;
 
 let launcherPath = app.getPath('appData') + '\\KarasiaLauncher\\'
 let launcherModsPath = app.getPath('appData') + '\\KarasiaLauncher\\mods\\'
+let launcherJavaPath = app.getPath('appData') + '\\KarasiaLauncher\\Java\\'
 
 const downloader = new Downloader({
   url: "http://193.168.146.71/modsList.json",
@@ -81,7 +83,7 @@ ipcMain.on('Play', async (event, data) => {
     //If the folder for the mods is already created, check mods, download missing mods and launch the game
     if(fs.existsSync(launcherModsPath)){
 
-      if(fs.existsSync(launcherPath + "java.exe")){
+      if(fs.existsSync(launcherJavaPath + "java.exe")){
 
         fs.readdirSync(launcherModsPath).forEach(file => {
           folderMods.push(file)
@@ -115,7 +117,7 @@ ipcMain.on('Play', async (event, data) => {
               authorization: Authenticator.getAuth(data.email, data.password),
               root: launcherPath,
               forge: launcherPath + "forge.jar",
-              javaPath: path.join(launcherPath + 'java.exe'),
+              javaPath: path.join(launcherJavaPath + 'java.exe'),
               version: {
                   number: "1.12.2",
                   type: "release"
@@ -144,7 +146,7 @@ ipcMain.on('Play', async (event, data) => {
               authorization: Authenticator.getAuth(data.email, data.password),
               root: launcherPath,
               forge: launcherPath + "forge.jar",
-              javaPath: path.join(launcherPath + 'java.exe'),
+              javaPath: path.join(launcherJavaPath + 'java.exe'),
               version: {
                   number: "1.12.2",
                   type: "release"
@@ -174,11 +176,15 @@ ipcMain.on('Play', async (event, data) => {
       }else{
 
         let downloadJava = new Downloader({
-          url: "http://193.168.146.71/java.exe",
-          directory: launcherPath
+          url: "http://193.168.146.71/java.rar",
+          directory: launcherJavaPath
         })
 
         await downloadJava.download()
+
+        let rar = new Unrar(launcherJavaPath + 'java.rar')
+
+        rar.extract(launcherJavaPath)
 
         fs.readdirSync(launcherModsPath).forEach(file => {
           folderMods.push(file)
@@ -212,7 +218,7 @@ ipcMain.on('Play', async (event, data) => {
               authorization: Authenticator.getAuth(data.email, data.password),
               root: launcherPath,
               forge: launcherPath + "forge.jar",
-              javaPath: path.join(launcherPath + 'java.exe'),
+              javaPath: path.join(launcherJavaPath + 'java.exe'),
               version: {
                   number: "1.12.2",
                   type: "release"
@@ -241,7 +247,7 @@ ipcMain.on('Play', async (event, data) => {
               authorization: Authenticator.getAuth(data.email, data.password),
               root: launcherPath,
               forge: launcherPath + "forge.jar",
-              javaPath: path.join(launcherPath + 'java.exe'),
+              javaPath: path.join(launcherJavaPath + 'java.exe'),
               version: {
                   number: "1.12.2",
                   type: "release"
@@ -289,11 +295,15 @@ ipcMain.on('Play', async (event, data) => {
     await downloader.download()
 
     let downloadJava = new Downloader({
-      url: "http://193.168.146.71/java.exe",
-      directory: launcherPath
+      url: "http://193.168.146.71/java.rar",
+      directory: launcherJavaPath
     })
 
     await downloadJava.download()
+
+    let rar = new Unrar(launcherJavaPath + 'java.rar')
+
+    rar.extract(launcherJavaPath)
 
     let modsData = fs.readFileSync(launcherPath + "modsList.json")
     let jsonData = JSON.parse(modsData)
@@ -314,7 +324,7 @@ ipcMain.on('Play', async (event, data) => {
       authorization: Authenticator.getAuth(data.email, data.password),
       root: launcherPath,
       forge: launcherPath + "forge.jar",
-      javaPath: path.join(launcherPath + 'java.exe'),
+      javaPath: path.join(launcherJavaPath + 'java.exe'),
       version: {
           number: "1.12.2",
           type: "release"
