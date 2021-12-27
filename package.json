@@ -26,6 +26,7 @@
     "minecraft-launcher-core": "^3.16.11",
     "minecraft-pinger": "^1.0.5",
     "minecraft-server-util": "^5.2.6",
+    "nodejs-file-downloader": "^4.8.1",
     "progressbar.js": "^1.1.0",
     "string-progressbar": "^1.0.4"
   }

@@ -6,6 +6,7 @@ const ipcMain = electron.ipcMain
 const { Client, Authenticator } = require('minecraft-launcher-core');
 const launcher = new Client();
 const fs = require('fs')
+const Downloader = require("nodejs-file-downloader");
 
 let mainWindow;
 
@@ -23,7 +24,7 @@ function createWindow () {
     }
   }); // on définit une taille pour notre fenêtre
 
-  mainWindow.loadURL(`file://${__dirname}/components/views/login.html`); // on doit charger un chemin absolu
+  mainWindow.loadURL(`file://${__dirname}/components/views/settings.html`); // on doit charger un chemin absolu
 
   mainWindow.on('closed', () => {
     mainWindow = null;
@@ -43,6 +44,8 @@ app.on('activate', () => {
     createWindow();
   }
 });
+
+//Login player
 ipcMain.on('login', (event, data) => {
   Authenticator.getAuth(data.email, data.password).then(e => {
     console.log(e)
@@ -56,12 +59,15 @@ ipcMain.on('login', (event, data) => {
   })
 })
 
+//Launch the Minecraft Client
 ipcMain.on('Play', (event, data) => {
+
   if(fs.existsSync(launcherPath)){
     console.log('Dossier déjà crée !')
   }else{
     fs.mkdirSync(launcherPath)
   }
+
   let opts = {
     clientPackage: null,
     authorization: Authenticator.getAuth(data.email, data.password),
@@ -83,5 +89,24 @@ ipcMain.on('Play', (event, data) => {
     let task = e.task
     let total = e.total
     event.sender.send('dataDownload', (event, {type, task, total}))
+  })
+
+})
+
+//Change page
+ipcMain.on('GoToMain', (event, data) => {
+  mainWindow.loadURL(`file://${__dirname}/components/views/main.html`)
+  let datas = {"username" : data.name, "uuid": data.uuid, "email": data.email, "password": data.password}
+  mainWindow.webContents.once('dom-ready', () => {
+    mainWindow.webContents.send('usernameData', datas)
+  })
+})
+
+//Change page
+ipcMain.on('GoToSettings', (event, data) => {
+  mainWindow.loadURL(`file://${__dirname}/components/views/settings.html`)
+  let datas = {"username" : data.name, "uuid": data.uuid, "email": data.email, "password": data.password}
+  mainWindow.webContents.once('dom-ready', () => {
+    mainWindow.webContents.send('usernameData', datas)
   })
 })

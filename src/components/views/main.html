@@ -26,13 +26,13 @@
 	  		</div>
         <ul class="list-unstyled components mb-5">
           <li class="active">
-            <a href="#"><span class="fa fa-home mr-3"></span> Accueil</a>
+            <a href="#" id="accueilButton"><span class="fa fa-home mr-3"></span> Accueil</a>
           </li>
           <li>
               <a href="#"><span class="fa fa-download mr-3"><small class="d-flex align-items-center justify-content-center"></small></span> Téléchargements</a>
           </li>
           <li>
-            <a href="#"><span class="fa fa-cog mr-3"></span> Settings</a>
+            <a href="#" id="settingsButton"><span class="fa fa-cog mr-3"></span> Settings</a>
           </li>
           <li>
             <a href="#"><span class="fa fa-support mr-3"></span> Support</a>
@@ -57,10 +57,7 @@
             </div>
           </div>
         </div>
-        <div id="bar-container" style="width: 1300px; height: 30px; background-color: lightgray; position: absolute; bottom: 105px; right: 300px;">
           <p id="downloadProgress" style="position: absolute; bottom: 20px; right: 650px; color: black; font-size: large;"></p>
-          <div id="bar" style="width: 0; height: 100%; background-color: lightpink; transition: width 0.2s; position: absolute; bottom: 105px; right: 300px;"></div>
-        </div>
         <button class="btn btn-outline-success" style="position: absolute; bottom: 100px; right: 200px;" id="playButton">Jouer !</button>
       </div>
 		</div>
@@ -76,14 +73,10 @@
       const pinger = require('minecraft-pinger')
       const util = require('minecraft-server-util');
 
-
-      function setBar(percentage){
-        let pourcent = percentage + 20
-        document.getElementById('bar').style.width = pourcent + "%"
-      }
-
       let email 
       let password
+      let username
+      let uuid
 
       //Get data (username, uuid, email & password) from user
       ipc.on('usernameData', (event, datas) => {
@@ -92,8 +85,11 @@
         document.getElementById('PlayerSkin').style.backgroundImage = `url('https://crafatar.com/avatars/${datas.uuid}')`
         email = datas.email
         password = datas.password
+        username = datas.username
+        uuid = datas.uuid
       })
 
+      //Get Server Stats
       pinger.ping('localhost', 25565, (error, result) => {
         if (error) return console.error(error)
         if(result){
@@ -104,12 +100,23 @@
         }
       })
 
+      //Send event for launching Minecraft
       document.getElementById('playButton').addEventListener('click', () => {
         let userEmail = email
         let userPaswword = password
         ipc.send('Play', (event, {userEmail, userPaswword}))
       })
 
+      //Send Event for changing Pages
+      document.getElementById('settingsButton').addEventListener('click', () => {
+        let userName = username
+        let userUUID = uuid
+        let userEmail = email
+        let userPaswword = password
+        ipc.send('GoToSettings', (event, {userName, userUUID, userEmail, userPaswword}))
+      })
+
+      // Get Launch Event
       ipc.on('dataDownload', (event, data) => {
         document.getElementById('downloadProgress').innerHTML = `Téléchargement des ${data.type} : ${data.task} / ${data.total}`
         setBar(1)
