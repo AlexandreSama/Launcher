@@ -115,7 +115,7 @@ ipcMain.on('Play', async (event, data) => {
               authorization: Authenticator.getAuth(data.email, data.password),
               root: launcherPath,
               forge: launcherPath + "forge.jar",
-              javaPath: launcherPath + "java.exe",
+              javaPath: path.join(launcherPath + 'java.exe'),
               version: {
                   number: "1.12.2",
                   type: "release"
@@ -144,7 +144,7 @@ ipcMain.on('Play', async (event, data) => {
               authorization: Authenticator.getAuth(data.email, data.password),
               root: launcherPath,
               forge: launcherPath + "forge.jar",
-              javaPath: launcherPath + "java.exe",
+              javaPath: path.join(launcherPath + 'java.exe'),
               version: {
                   number: "1.12.2",
                   type: "release"
@@ -212,7 +212,7 @@ ipcMain.on('Play', async (event, data) => {
               authorization: Authenticator.getAuth(data.email, data.password),
               root: launcherPath,
               forge: launcherPath + "forge.jar",
-              javaPath: launcherPath + "java.exe",
+              javaPath: path.join(launcherPath + 'java.exe'),
               version: {
                   number: "1.12.2",
                   type: "release"
@@ -241,7 +241,7 @@ ipcMain.on('Play', async (event, data) => {
               authorization: Authenticator.getAuth(data.email, data.password),
               root: launcherPath,
               forge: launcherPath + "forge.jar",
-              javaPath: launcherPath + "java.exe",
+              javaPath: path.join(launcherPath + 'java.exe'),
               version: {
                   number: "1.12.2",
                   type: "release"
@@ -314,7 +314,7 @@ ipcMain.on('Play', async (event, data) => {
       authorization: Authenticator.getAuth(data.email, data.password),
       root: launcherPath,
       forge: launcherPath + "forge.jar",
-      javaPath: launcherPath + "java.exe",
+      javaPath: path.join(launcherPath + 'java.exe'),
       version: {
           number: "1.12.2",
           type: "release"
