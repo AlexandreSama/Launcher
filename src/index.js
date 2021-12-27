@@ -81,90 +81,193 @@ ipcMain.on('Play', async (event, data) => {
     //If the folder for the mods is already created, check mods, download missing mods and launch the game
     if(fs.existsSync(launcherModsPath)){
 
-      fs.readdirSync(launcherModsPath).forEach(file => {
-        folderMods.push(file)
-      })
+      if(fs.existsSync(launcherPath + "java.exe")){
 
-      try {
-        await downloader.download()
-
-        let modsData = fs.readFileSync(launcherPath + "modsList.json")
-        let jsonData = JSON.parse(modsData)
-
-        await jsonData.forEach(element => {
-          jsonMods.push(element.name)
-        });
-
-        let difference = jsonMods.filter(x => !folderMods.includes(x));
-        
-        if(difference.length >= 1){
-          difference.forEach( async element => {
-            let downloaderMissedMods = new Downloader({
-              url: "http://193.168.146.71/mods/" + element,
-              directory: launcherModsPath
+        fs.readdirSync(launcherModsPath).forEach(file => {
+          folderMods.push(file)
+        })
+  
+        try {
+          await downloader.download()
+  
+          let modsData = fs.readFileSync(launcherPath + "modsList.json")
+          let jsonData = JSON.parse(modsData)
+  
+          await jsonData.forEach(element => {
+            jsonMods.push(element.name)
+          });
+  
+          let difference = jsonMods.filter(x => !folderMods.includes(x));
+          
+          if(difference.length >= 1){
+            difference.forEach( async element => {
+              let downloaderMissedMods = new Downloader({
+                url: "http://193.168.146.71/mods/" + element,
+                directory: launcherModsPath
+              })
+  
+              await downloaderMissedMods.download()
             })
-
-            await downloaderMissedMods.download()
-          })
-          console.log('Mods manquant recupere !')
-
-          let opts = {
-            clientPackage: null,
-            authorization: Authenticator.getAuth(data.email, data.password),
-            root: launcherPath,
-            forge: launcherPath + "forge.jar",
-            version: {
-                number: "1.12.2",
-                type: "release"
-            },
-            memory: {
-                max: "6G",
-                min: "4G"
+            console.log('Mods manquant recupere !')
+  
+            let opts = {
+              clientPackage: null,
+              authorization: Authenticator.getAuth(data.email, data.password),
+              root: launcherPath,
+              forge: launcherPath + "forge.jar",
+              javaPath: launcherPath + "java.exe",
+              version: {
+                  number: "1.12.2",
+                  type: "release"
+              },
+              memory: {
+                  max: "6G",
+                  min: "4G"
+              }
             }
-          }
-
-          fs.unlinkSync(launcherPath + "modsList.json")
-
-          launcher.launch(opts);
-
-          launcher.on('progress', (e) => {
-            let type = e.type
-            let task = e.task
-            let total = e.total
-            event.sender.send('dataDownload', (event, {type, task, total}))
-          })
-
-        }else{
-
-          let opts = {
-            clientPackage: null,
-            authorization: Authenticator.getAuth(data.email, data.password),
-            root: launcherPath,
-            forge: launcherPath + "forge.jar",
-            version: {
-                number: "1.12.2",
-                type: "release"
-            },
-            memory: {
-                max: "6G",
-                min: "4G"
+  
+            fs.unlinkSync(launcherPath + "modsList.json")
+  
+            launcher.launch(opts);
+  
+            launcher.on('progress', (e) => {
+              let type = e.type
+              let task = e.task
+              let total = e.total
+              event.sender.send('dataDownload', (event, {type, task, total}))
+            })
+  
+          }else{
+  
+            let opts = {
+              clientPackage: null,
+              authorization: Authenticator.getAuth(data.email, data.password),
+              root: launcherPath,
+              forge: launcherPath + "forge.jar",
+              javaPath: launcherPath + "java.exe",
+              version: {
+                  number: "1.12.2",
+                  type: "release"
+              },
+              memory: {
+                  max: "6G",
+                  min: "4G"
+              }
             }
+  
+            fs.unlinkSync(launcherPath + "modsList.json")
+  
+            launcher.launch(opts);
+  
+            launcher.on('progress', (e) => {
+              let type = e.type
+              let task = e.task
+              let total = e.total
+              event.sender.send('dataDownload', (event, {type, task, total}))
+            })
           }
-
-          fs.unlinkSync(launcherPath + "modsList.json")
-
-          launcher.launch(opts);
-
-          launcher.on('progress', (e) => {
-            let type = e.type
-            let task = e.task
-            let total = e.total
-            event.sender.send('dataDownload', (event, {type, task, total}))
-          })
+  
+        } catch (error) {
+          console.log(error)
         }
 
-      } catch (error) {
-        console.log(error)
+      }else{
+
+        let downloadJava = new Downloader({
+          url: "http://193.168.146.71/java.exe",
+          directory: launcherPath
+        })
+
+        await downloadJava.download()
+
+        fs.readdirSync(launcherModsPath).forEach(file => {
+          folderMods.push(file)
+        })
+  
+        try {
+          await downloader.download()
+  
+          let modsData = fs.readFileSync(launcherPath + "modsList.json")
+          let jsonData = JSON.parse(modsData)
+  
+          await jsonData.forEach(element => {
+            jsonMods.push(element.name)
+          });
+  
+          let difference = jsonMods.filter(x => !folderMods.includes(x));
+          
+          if(difference.length >= 1){
+            difference.forEach( async element => {
+              let downloaderMissedMods = new Downloader({
+                url: "http://193.168.146.71/mods/" + element,
+                directory: launcherModsPath
+              })
+  
+              await downloaderMissedMods.download()
+            })
+            console.log('Mods manquant recupere !')
+  
+            let opts = {
+              clientPackage: null,
+              authorization: Authenticator.getAuth(data.email, data.password),
+              root: launcherPath,
+              forge: launcherPath + "forge.jar",
+              javaPath: launcherPath + "java.exe",
+              version: {
+                  number: "1.12.2",
+                  type: "release"
+              },
+              memory: {
+                  max: "6G",
+                  min: "4G"
+              }
+            }
+  
+            fs.unlinkSync(launcherPath + "modsList.json")
+  
+            launcher.launch(opts);
+  
+            launcher.on('progress', (e) => {
+              let type = e.type
+              let task = e.task
+              let total = e.total
+              event.sender.send('dataDownload', (event, {type, task, total}))
+            })
+  
+          }else{
+  
+            let opts = {
+              clientPackage: null,
+              authorization: Authenticator.getAuth(data.email, data.password),
+              root: launcherPath,
+              forge: launcherPath + "forge.jar",
+              javaPath: launcherPath + "java.exe",
+              version: {
+                  number: "1.12.2",
+                  type: "release"
+              },
+              memory: {
+                  max: "6G",
+                  min: "4G"
+              }
+            }
+  
+            fs.unlinkSync(launcherPath + "modsList.json")
+  
+            launcher.launch(opts);
+  
+            launcher.on('progress', (e) => {
+              let type = e.type
+              let task = e.task
+              let total = e.total
+              event.sender.send('dataDownload', (event, {type, task, total}))
+            })
+          }
+  
+        } catch (error) {
+          console.log(error)
+        }
+
       }
 
     //If the folder for the mods isn't created (weird errors :think:)
@@ -185,6 +288,13 @@ ipcMain.on('Play', async (event, data) => {
 
     await downloader.download()
 
+    let downloadJava = new Downloader({
+      url: "http://193.168.146.71/java.exe",
+      directory: launcherPath
+    })
+
+    await downloadJava.download()
+
     let modsData = fs.readFileSync(launcherPath + "modsList.json")
     let jsonData = JSON.parse(modsData)
 
@@ -204,13 +314,14 @@ ipcMain.on('Play', async (event, data) => {
       authorization: Authenticator.getAuth(data.email, data.password),
       root: launcherPath,
       forge: launcherPath + "forge.jar",
+      javaPath: launcherPath + "java.exe",
       version: {
           number: "1.12.2",
           type: "release"
       },
       memory: {
-          max: "6G",
-          min: "4G"
+          max: "6000",
+          min: "4000"
       }
     }
 
