@@ -136,6 +136,10 @@ ipcMain.on('Play', async (event, data) => {
               await downloaderMissedMods.download()
             })
             console.log('Mods manquant recupere !')
+
+            let rawdata = fs.readFileSync(launcherPath + 'infos.json');
+            let student = JSON.parse(rawdata);
+            let ram = student.options.ram
   
             let opts = {
               clientPackage: null,
@@ -148,7 +152,7 @@ ipcMain.on('Play', async (event, data) => {
                   type: "release"
               },
               memory: {
-                  max: "6G",
+                  max: ram,
                   min: "4G"
               }
             }
@@ -165,6 +169,10 @@ ipcMain.on('Play', async (event, data) => {
             })
   
           }else{
+
+            let rawdata = fs.readFileSync(launcherPath + 'infos.json');
+            let student = JSON.parse(rawdata);
+            let ram = student.options.ram
   
             let opts = {
               clientPackage: null,
@@ -177,7 +185,7 @@ ipcMain.on('Play', async (event, data) => {
                   type: "release"
               },
               memory: {
-                  max: "6G",
+                  max: ram,
                   min: "4G"
               }
             }
@@ -237,6 +245,10 @@ ipcMain.on('Play', async (event, data) => {
               await downloaderMissedMods.download()
             })
             console.log('Mods manquant recupere !')
+
+            let rawdata = fs.readFileSync(launcherPath + 'infos.json');
+            let student = JSON.parse(rawdata);
+            let ram = student.options.ram
   
             let opts = {
               clientPackage: null,
@@ -249,7 +261,7 @@ ipcMain.on('Play', async (event, data) => {
                   type: "release"
               },
               memory: {
-                  max: "6G",
+                  max: ram,
                   min: "4G"
               }
             }
@@ -266,6 +278,10 @@ ipcMain.on('Play', async (event, data) => {
             })
   
           }else{
+
+            let rawdata = fs.readFileSync(launcherPath + 'infos.json');
+            let student = JSON.parse(rawdata);
+            let ram = student.options.ram
   
             let opts = {
               clientPackage: null,
@@ -278,7 +294,7 @@ ipcMain.on('Play', async (event, data) => {
                   type: "release"
               },
               memory: {
-                  max: "6G",
+                  max: ram,
                   min: "4G"
               }
             }
@@ -344,6 +360,10 @@ ipcMain.on('Play', async (event, data) => {
 
     fs.unlinkSync(launcherPath + "modsList.json")
 
+    let rawdata = fs.readFileSync(launcherPath + 'infos.json');
+    let student = JSON.parse(rawdata);
+    let ram = student.options.ram
+
     let opts = {
       clientPackage: null,
       authorization: Authenticator.getAuth(data.email, data.password),
@@ -355,7 +375,7 @@ ipcMain.on('Play', async (event, data) => {
           type: "release"
       },
       memory: {
-          max: "6000",
+          max: ram,
           min: "4000"
       }
     }
