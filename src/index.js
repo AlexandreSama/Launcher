@@ -14,7 +14,7 @@ let mainWindow;
 
 let launcherPath = app.getPath('appData') + '\\KarasiaLauncher\\'
 let launcherModsPath = app.getPath('appData') + '\\KarasiaLauncher\\mods\\'
-let launcherJavaPath = app.getPath('appData') + '\\KarasiaLauncher\\Java\\bin\\'
+let launcherJavaPath = app.getPath('appData') + '\\KarasiaLauncher\\Java\\'
 
 const downloader = new Downloader({
   url: "http://193.168.146.71/modsList.json",
@@ -117,7 +117,7 @@ ipcMain.on('Play', async (event, data) => {
               authorization: Authenticator.getAuth(data.email, data.password),
               root: launcherPath,
               forge: launcherPath + "forge.jar",
-              javaPath: path.join(launcherJavaPath + 'java.exe'),
+              javaPath: path.join(launcherJavaPath + 'bin\\java.exe'),
               version: {
                   number: "1.12.2",
                   type: "release"
@@ -146,7 +146,7 @@ ipcMain.on('Play', async (event, data) => {
               authorization: Authenticator.getAuth(data.email, data.password),
               root: launcherPath,
               forge: launcherPath + "forge.jar",
-              javaPath: path.join(launcherJavaPath + 'java.exe'),
+              javaPath: path.join(launcherJavaPath + 'bin\\java.exe'),
               version: {
                   number: "1.12.2",
                   type: "release"
@@ -218,7 +218,7 @@ ipcMain.on('Play', async (event, data) => {
               authorization: Authenticator.getAuth(data.email, data.password),
               root: launcherPath,
               forge: launcherPath + "forge.jar",
-              javaPath: path.join(launcherJavaPath + 'java.exe'),
+              javaPath: path.join(launcherJavaPath + 'bin\\java.exe'),
               version: {
                   number: "1.12.2",
                   type: "release"
@@ -324,7 +324,7 @@ ipcMain.on('Play', async (event, data) => {
       authorization: Authenticator.getAuth(data.email, data.password),
       root: launcherPath,
       forge: launcherPath + "forge.jar",
-      javaPath: path.join(launcherJavaPath + 'java.exe'),
+      javaPath: path.join(launcherJavaPath + 'bin\\java.exe'),
       version: {
           number: "1.12.2",
           type: "release"
