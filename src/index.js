@@ -389,6 +389,10 @@ ipcMain.on('GoToSettings', (event, data) => {
   })
 })
 
+ipcMain.on('saveRam', (event, data) => {
+  
+})
+
 ipcMain.on('app_version', (event) => {
   event.sender.send('app_version', { version: app.getVersion() });
 });
