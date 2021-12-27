@@ -9,6 +9,21 @@
 		
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 		<link rel="stylesheet" href="../addons/main/style.css">
+    <style>
+      #notification {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        width: 200px;
+        padding: 20px;
+        border-radius: 5px;
+        background-color: white;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+      }
+      .hidden {
+        display: none;
+      }
+    </style>
   </head>
   <body>
 		
@@ -61,6 +76,11 @@
         <button class="btn btn-outline-success" style="position: absolute; bottom: 100px; right: 200px;" id="playButton">Jouer !</button>
       </div>
 		</div>
+    <div id="notification" class="hidden">
+      <p id="message"></p>
+      <button id="close-button" onclick="closeNotification()">Fermer</button>
+      <button id="restart-button" onclick="restartApp()" class="hidden"> Restart</button>
+    </div>
 
     <script>window.$ = window.jQuery = require('jquery');</script>
     <script src="../addons/popper.js"></script>
@@ -72,6 +92,31 @@
       const ipc = electron.ipcRenderer
       const pinger = require('minecraft-pinger')
       const util = require('minecraft-server-util');
+
+      const notification = document.getElementById('notification')
+      const message = document.getElementById('message')
+      const restartButton = document.getElementById('restart-button')
+
+      ipc.on('update_available', () => {
+        ipc.removeAllListeners('update_available')
+        message.innerText = 'Une mise a jour du launcher est disponible, je la télécharge pour vous...'
+        notification.classList.remove('hidden')
+      })
+
+      ipc.on('update_downloaded', () => {
+        ipc.removeAllListeners('update_downloaded')
+        message.innerText = 'Mise a jour téléchargé avec succés, elle sera installé après un redémarrage. Redémarrer maintenant ?'
+        restartButton.classList.remove('hidden')
+        notification.classList.remove('hidden')
+      })
+
+      function closeNotification(){
+        notification.classList.add('hidden')
+      }
+
+      function restartApp(){
+        ipc.send('restart_app')
+      }
 
       let email 
       let password

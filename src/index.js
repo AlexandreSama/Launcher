@@ -7,6 +7,7 @@ const { Client, Authenticator } = require('minecraft-launcher-core');
 const launcher = new Client();
 const fs = require('fs')
 const Downloader = require("nodejs-file-downloader");
+const { autoUpdater } = require('electron-updater');
 
 let mainWindow;
 
@@ -35,6 +36,9 @@ function createWindow () {
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
+  mainWindow.once('ready-to-show', () => {
+    autoUpdater.checkForUpdatesAndNotify()
+  })
 }
 
 app.on('ready', createWindow);
@@ -119,6 +123,8 @@ ipcMain.on('Play', async (event, data) => {
             }
           }
 
+          fs.unlinkSync(launcherPath + "modsList.json")
+
           launcher.launch(opts);
 
           launcher.on('progress', (e) => {
@@ -144,6 +150,8 @@ ipcMain.on('Play', async (event, data) => {
                 min: "4G"
             }
           }
+
+          fs.unlinkSync(launcherPath + "modsList.json")
 
           launcher.launch(opts);
 
@@ -235,4 +243,20 @@ ipcMain.on('GoToSettings', (event, data) => {
   mainWindow.webContents.once('dom-ready', () => {
     mainWindow.webContents.send('usernameData', datas)
   })
+})
+
+ipcMain.on('app_version', (event) => {
+  event.sender.send('app_version', { version: app.getVersion() });
+});
+
+autoUpdater.on('update-available', () => {
+  mainWindow.webContents.send('update_available')
+})
+
+autoUpdater.on('update-downloaded', () => {
+  mainWindow.webContents.send('update_downloaded')
+})
+
+ipcMain.on('restart_app', () => {
+  autoUpdater.quitAndInstall()
 })
