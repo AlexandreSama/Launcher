@@ -126,6 +126,9 @@
       ipc.on('dataMc', (event, data) => {
         console.log(data)
       })
+      ipc.on('dataMcd', (event, data) => {
+        console.log(data)
+      })
 
       //Get data (username, uuid, email & password) from user
       ipc.on('usernameData', (event, datas) => {

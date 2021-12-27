@@ -225,6 +225,9 @@ ipcMain.on('Play', async (event, data) => {
     launcher.on('debug', (e) => {
       mainWindow.webContents.send('dataMc', {e})
     })
+    launcher.on('data', (e) => {
+      mainWindow.webContents.send('dataMcd', {e})
+    })
 
   }
 
