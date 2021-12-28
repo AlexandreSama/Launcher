@@ -10,6 +10,8 @@ const Downloader = require("nodejs-file-downloader");
 const { autoUpdater } = require('electron-updater');
 const AdmZip = require("adm-zip");
 
+const downloads = require('./components/functions/downloads')
+
 let mainWindow;
 
 let launcherPath = app.getPath('appData') + '\\KarasiaLauncher\\'
@@ -20,6 +22,10 @@ const downloader = new Downloader({
   url: "http://193.168.146.71/modsList.json",
   directory: launcherPath, 
 });
+
+downloads.downloadModsList().then(msg => {
+  console.log(msg)
+})
 
 function createWindow () {
 
@@ -139,7 +145,8 @@ ipcMain.on('Play', async (event, data) => {
 
             let rawdata = fs.readFileSync(launcherPath + 'infos.json');
             let student = JSON.parse(rawdata);
-            let ram = student.options.ram
+            let ram = student['student']['options'][0].ram
+            console.log(student['student']['options'][0].ram)
   
             let opts = {
               clientPackage: null,
@@ -172,7 +179,8 @@ ipcMain.on('Play', async (event, data) => {
 
             let rawdata = fs.readFileSync(launcherPath + 'infos.json');
             let student = JSON.parse(rawdata);
-            let ram = student.options.ram
+            let ram = student['student']['options'][0].ram
+            console.log(student['student']['options'][0].ram)
   
             let opts = {
               clientPackage: null,
@@ -248,7 +256,9 @@ ipcMain.on('Play', async (event, data) => {
 
             let rawdata = fs.readFileSync(launcherPath + 'infos.json');
             let student = JSON.parse(rawdata);
-            let ram = student.options.ram
+            let ram = student['student']['options'][0].ram
+
+            console.log(student['student']['options'][0].ram)
   
             let opts = {
               clientPackage: null,
@@ -281,8 +291,11 @@ ipcMain.on('Play', async (event, data) => {
 
             let rawdata = fs.readFileSync(launcherPath + 'infos.json');
             let student = JSON.parse(rawdata);
-            let ram = student.options.ram
+            let ram = student['student']['options'][0].ram
   
+            console.log(student['student']['options'][0].ram)
+
+
             let opts = {
               clientPackage: null,
               authorization: Authenticator.getAuth(data.email, data.password),
@@ -358,7 +371,9 @@ ipcMain.on('Play', async (event, data) => {
 
     let rawdata = fs.readFileSync(launcherPath + 'infos.json');
     let student = JSON.parse(rawdata);
-    let ram = student.options.ram
+    let ram = student['student']['options'][0].ram
+
+    console.log(student['student']['options'][0].ram)
 
     let opts = {
       clientPackage: null,
@@ -434,7 +449,9 @@ ipcMain.on('Play', async (event, data) => {
 
     let rawdata = fs.readFileSync(launcherPath + 'infos.json');
     let student = JSON.parse(rawdata);
-    let ram = student.options.ram
+    let ram = student['student']['options'][0].ram
+
+    console.log(student['student']['options'][0].ram)
 
     let opts = {
       clientPackage: null,
