@@ -2,3 +2,4 @@
 /modsList.json
 /dist
 /electron-builder.yml
+/test.js

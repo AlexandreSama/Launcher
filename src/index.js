@@ -4,13 +4,12 @@ const BrowserWindow = electron.BrowserWindow;
 const path = require('path');
 const ipcMain = electron.ipcMain
 const { Client, Authenticator } = require('minecraft-launcher-core');
-const launcher = new Client();
 const fs = require('fs')
-const Downloader = require("nodejs-file-downloader");
 const { autoUpdater } = require('electron-updater');
-const AdmZip = require("adm-zip");
 
-const downloads = require('./components/functions/downloads')
+const {downloadModsList} = require('./components/functions/downloads')
+const {checkLauncherPaths, checkForge, checkJava, checkMods} = require('./components/functions/checkFolders');
+const { launchGame, getRam } = require('./components/functions/launchGame');
 
 let mainWindow;
 
@@ -18,12 +17,7 @@ let launcherPath = app.getPath('appData') + '\\KarasiaLauncher\\'
 let launcherModsPath = app.getPath('appData') + '\\KarasiaLauncher\\mods\\'
 let launcherJavaPath = app.getPath('appData') + '\\KarasiaLauncher\\Java\\'
 
-const downloader = new Downloader({
-  url: "http://193.168.146.71/modsList.json",
-  directory: launcherPath, 
-});
-
-downloads.downloadModsList().then(msg => {
+downloadModsList(launcherPath).then(msg => {
   console.log(msg)
 })
 
@@ -84,407 +78,43 @@ ipcMain.on('login', (event, data) => {
 
 ipcMain.on('saveID', (event, data) => {
   if(fs.existsSync(launcherPath + 'infos.json')){
-    let rawdata = fs.readFileSync(launcherPath + 'infos.json');
-		let student = JSON.parse(rawdata);
-    console.log(data)
-    student.options.push({email: data})
-    let json = JSON.stringify(student)
-    fs.writeFileSync(launcherPath + 'infos.json', json)
-  }else{
-    let ID = {
-      options: [{
-        "email": data.email
-      }]
+
+    let rawdata = fs.readFileSync(launcherPath + 'infos.json')
+
+    let student = JSON.parse(rawdata);
+
+    if(student.infos[0].email === data.email){
+      return false
+    }else{
+      student.infos.push({email: data})
+      let json = JSON.stringify(student)
+      fs.writeFileSync(launcherPath + 'infos.json', json)
     }
+
+  }else{
+
+    let ID = {"infos": [
+      {email: data.email}
+    ]}
     let datsa = JSON.stringify(ID)
-    fs.mkdirSync(launcherPath)
     fs.writeFileSync(launcherPath + 'infos.json', datsa)
+
   }
 })
 
 //Launch the Minecraft Client
 ipcMain.on('Play', async (event, data) => {
 
-  let jsonMods = []
-  let folderMods = []
-
-  //If the folder for the launcher is already created
-  if(fs.existsSync(launcherPath)){
-
-    //If the folder for the mods is already created, check mods, download missing mods and launch the game
-    if(fs.existsSync(launcherModsPath)){
-
-      if(fs.existsSync(launcherJavaPath + "java.exe")){
-
-        fs.readdirSync(launcherModsPath).forEach(file => {
-          folderMods.push(file)
-        })
-  
-        try {
-          await downloader.download()
-  
-          let modsData = fs.readFileSync(launcherPath + "modsList.json")
-          let jsonData = JSON.parse(modsData)
-  
-          await jsonData.forEach(element => {
-            jsonMods.push(element.name)
-          });
-  
-          let difference = jsonMods.filter(x => !folderMods.includes(x));
-          
-          if(difference.length >= 1){
-            difference.forEach( async element => {
-              let downloaderMissedMods = new Downloader({
-                url: "http://193.168.146.71/mods/" + element,
-                directory: launcherModsPath
-              })
-  
-              await downloaderMissedMods.download()
-            })
-            console.log('Mods manquant recupere !')
-
-            let rawdata = fs.readFileSync(launcherPath + 'infos.json');
-            let student = JSON.parse(rawdata);
-            let ram = student['student']['options'][0].ram
-            console.log(student['student']['options'][0].ram)
-  
-            let opts = {
-              clientPackage: null,
-              authorization: Authenticator.getAuth(data.email, data.password),
-              root: launcherPath,
-              forge: launcherPath + "forge.jar",
-              javaPath: path.join(launcherJavaPath + 'bin\\java.exe'),
-              version: {
-                  number: "1.12.2",
-                  type: "release"
-              },
-              memory: {
-                  max: ram,
-                  min: "4G"
-              }
-            }
-  
-            fs.unlinkSync(launcherPath + "modsList.json")
-  
-            launcher.launch(opts);
-  
-            launcher.on('progress', (e) => {
-              let type = e.type
-              let task = e.task
-              let total = e.total
-              event.sender.send('dataDownload', (event, {type, task, total}))
-            })
-  
-          }else{
-
-            let rawdata = fs.readFileSync(launcherPath + 'infos.json');
-            let student = JSON.parse(rawdata);
-            let ram = student['student']['options'][0].ram
-            console.log(student['student']['options'][0].ram)
-  
-            let opts = {
-              clientPackage: null,
-              authorization: Authenticator.getAuth(data.email, data.password),
-              root: launcherPath,
-              forge: launcherPath + "forge.jar",
-              javaPath: path.join(launcherJavaPath + 'bin\\java.exe'),
-              version: {
-                  number: "1.12.2",
-                  type: "release"
-              },
-              memory: {
-                  max: ram,
-                  min: "4G"
-              }
-            }
-  
-            fs.unlinkSync(launcherPath + "modsList.json")
-  
-            launcher.launch(opts);
-  
-            launcher.on('progress', (e) => {
-              let type = e.type
-              let task = e.task
-              let total = e.total
-              event.sender.send('dataDownload', (event, {type, task, total}))
-            })
-          }
-  
-        } catch (error) {
-          console.log(error)
-        }
-
-      }else{
-
-        let downloadJava = new Downloader({
-          url: "http://193.168.146.71/java.zip",
-          directory: launcherJavaPath
-        })
-
-        await downloadJava.download()
-
-        var zip = new AdmZip(launcherJavaPath + 'java.zip')
-
-        zip.extractAllTo(launcherJavaPath, true)
-
-        fs.readdirSync(launcherModsPath).forEach(file => {
-          folderMods.push(file)
-        })
-  
-        try {
-          await downloader.download()
-  
-          let modsData = fs.readFileSync(launcherPath + "modsList.json")
-          let jsonData = JSON.parse(modsData)
-  
-          await jsonData.forEach(element => {
-            jsonMods.push(element.name)
-          });
-  
-          let difference = jsonMods.filter(x => !folderMods.includes(x));
-          
-          if(difference.length >= 1){
-            difference.forEach( async element => {
-              let downloaderMissedMods = new Downloader({
-                url: "http://193.168.146.71/mods/" + element,
-                directory: launcherModsPath
-              })
-  
-              await downloaderMissedMods.download()
-            })
-            console.log('Mods manquant recupere !')
-
-            let rawdata = fs.readFileSync(launcherPath + 'infos.json');
-            let student = JSON.parse(rawdata);
-            let ram = student['student']['options'][0].ram
-
-            console.log(student['student']['options'][0].ram)
-  
-            let opts = {
-              clientPackage: null,
-              authorization: Authenticator.getAuth(data.email, data.password),
-              root: launcherPath,
-              forge: launcherPath + "forge.jar",
-              javaPath: path.join(launcherJavaPath + 'bin\\java.exe'),
-              version: {
-                  number: "1.12.2",
-                  type: "release"
-              },
-              memory: {
-                  max: ram,
-                  min: "4G"
-              }
-            }
-  
-            fs.unlinkSync(launcherPath + "modsList.json")
-  
-            launcher.launch(opts);
-  
-            launcher.on('progress', (e) => {
-              let type = e.type
-              let task = e.task
-              let total = e.total
-              event.sender.send('dataDownload', (event, {type, task, total}))
-            })
-  
-          }else{
-
-            let rawdata = fs.readFileSync(launcherPath + 'infos.json');
-            let student = JSON.parse(rawdata);
-            let ram = student['student']['options'][0].ram
-  
-            console.log(student['student']['options'][0].ram)
-
-
-            let opts = {
-              clientPackage: null,
-              authorization: Authenticator.getAuth(data.email, data.password),
-              root: launcherPath,
-              forge: launcherPath + "forge.jar",
-              javaPath: path.join(launcherJavaPath + 'java.exe'),
-              version: {
-                  number: "1.12.2",
-                  type: "release"
-              },
-              memory: {
-                  max: ram,
-                  min: "4G"
-              }
-            }
-  
-            fs.unlinkSync(launcherPath + "modsList.json")
-  
-            launcher.launch(opts);
-  
-            launcher.on('progress', (e) => {
-              let type = e.type
-              let task = e.task
-              let total = e.total
-              event.sender.send('dataDownload', (event, {type, task, total}))
-            })
-          }
-  
-        } catch (error) {
-          console.log(error)
-        }
-
-      }
-
-    //If the folder for the mods isn't created (weird errors :think:)
-    }else{
-
-      fs.mkdirSync(launcherModsPath)
-
-    let downloaderForge = new Downloader({
-      url: "http://193.168.146.71/forge.jar",
-      directory: launcherPath
-    })
-
-    await downloaderForge.download()
-
-    await downloader.download()
-
-    let downloadJava = new Downloader({
-      url: "http://193.168.146.71/java.zip",
-      directory: launcherJavaPath
-    })
-
-    await downloadJava.download()
-
-    var zip = new AdmZip(launcherJavaPath + 'java.zip')
-
-    zip.extractAllTo(launcherJavaPath, true)
-
-    let modsData = fs.readFileSync(launcherPath + "modsList.json")
-    let jsonData = JSON.parse(modsData)
-
-    await jsonData.forEach(element => {
-      let downloaderMods = new Downloader({
-        url: "http://193.168.146.71/mods/" + element.name,
-        directory: launcherModsPath
+  checkLauncherPaths(launcherPath, launcherModsPath, launcherJavaPath).then( async result => {
+    if(result === true || "Dossier crée avec succés"){
+      await checkForge(launcherPath, event)
+      await checkMods(launcherPath, launcherModsPath, event)
+      await checkJava(launcherJavaPath, event)
+      await getRam(launcherPath).then(async ram => {
+        await launchGame(ram, data.userEmail, data.userPaswword, launcherJavaPath, launcherPath, mainWindow, event)
       })
-
-      downloaderMods.download()
-    });
-
-    fs.unlinkSync(launcherPath + "modsList.json")
-
-    let rawdata = fs.readFileSync(launcherPath + 'infos.json');
-    let student = JSON.parse(rawdata);
-    let ram = student['student']['options'][0].ram
-
-    console.log(student['student']['options'][0].ram)
-
-    let opts = {
-      clientPackage: null,
-      authorization: Authenticator.getAuth(data.email, data.password),
-      root: launcherPath,
-      forge: launcherPath + "forge.jar",
-      javaPath: path.join(launcherJavaPath + 'bin\\java.exe'),
-      version: {
-          number: "1.12.2",
-          type: "release"
-      },
-      memory: {
-          max: ram,
-          min: "4000"
-      }
     }
-
-    launcher.launch(opts);
-
-    launcher.on('progress', (e) => {
-      let type = e.type
-      let task = e.task
-      let total = e.total
-      event.sender.send('dataDownload', (event, {type, task, total}))
-    })
-    launcher.on('debug', (e) => {
-      mainWindow.webContents.send('dataMc', {e})
-    })
-    launcher.on('data', (e) => {
-      mainWindow.webContents.send('dataMcd', {e})
-    })
-
-
-    }
-  //If the folder for the launcher isn't created, create folders, download forge & mods and launch the game
-  }else{
-    fs.mkdirSync(launcherPath)
-    fs.mkdirSync(launcherModsPath)
-
-    let downloaderForge = new Downloader({
-      url: "http://193.168.146.71/forge.jar",
-      directory: launcherPath
-    })
-
-    await downloaderForge.download()
-
-    await downloader.download()
-
-    let downloadJava = new Downloader({
-      url: "http://193.168.146.71/java.zip",
-      directory: launcherJavaPath
-    })
-
-    await downloadJava.download()
-
-    var zip = new AdmZip(launcherJavaPath + 'java.zip')
-
-    zip.extractAllTo(launcherJavaPath, true)
-
-    let modsData = fs.readFileSync(launcherPath + "modsList.json")
-    let jsonData = JSON.parse(modsData)
-
-    await jsonData.forEach(element => {
-      let downloaderMods = new Downloader({
-        url: "http://193.168.146.71/mods/" + element.name,
-        directory: launcherModsPath
-      })
-
-      downloaderMods.download()
-    });
-
-    fs.unlinkSync(launcherPath + "modsList.json")
-
-    let rawdata = fs.readFileSync(launcherPath + 'infos.json');
-    let student = JSON.parse(rawdata);
-    let ram = student['student']['options'][0].ram
-
-    console.log(student['student']['options'][0].ram)
-
-    let opts = {
-      clientPackage: null,
-      authorization: Authenticator.getAuth(data.email, data.password),
-      root: launcherPath,
-      forge: launcherPath + "forge.jar",
-      javaPath: path.join(launcherJavaPath + 'bin\\java.exe'),
-      version: {
-          number: "1.12.2",
-          type: "release"
-      },
-      memory: {
-          max: ram,
-          min: "4000"
-      }
-    }
-
-    launcher.launch(opts);
-
-    launcher.on('progress', (e) => {
-      let type = e.type
-      let task = e.task
-      let total = e.total
-      event.sender.send('dataDownload', (event, {type, task, total}))
-    })
-    launcher.on('debug', (e) => {
-      mainWindow.webContents.send('dataMc', {e})
-    })
-    launcher.on('data', (e) => {
-      mainWindow.webContents.send('dataMcd', {e})
-    })
-
-  }
+  })
 
 })
 
@@ -501,29 +131,51 @@ ipcMain.on('GoToMain', (event, data) => {
 //Change page
 ipcMain.on('GoToSettings', (event, data) => {
   mainWindow.loadURL(`file://${__dirname}/components/views/settings.html`)
-  let datas = {"username" : data.userName, "uuid": data.userUUID, "email": data.userEmail, "password": data.userPaswword}
-  mainWindow.webContents.once('dom-ready', () => {
-    mainWindow.webContents.send('usernameData', datas)
-  })
+  if(fs.existsSync(launcherPath + 'infos.json')){
+
+    let rawdata = fs.readFileSync(launcherPath + 'infos.json')
+
+    let student = JSON.parse(rawdata);
+
+    if(student['infos'][1] === null){
+    }else{
+      let datas = {"username" : data.userName, "uuid": data.userUUID, "email": data.userEmail, "password": data.userPaswword, "ram": student['infos'][1]}
+      mainWindow.webContents.once('dom-ready', () => {
+        mainWindow.webContents.send('usernameDataWithRam', datas)
+      })
+    }
+
+  }else{
+    let datas = {"username" : data.userName, "uuid": data.userUUID, "email": data.userEmail, "password": data.userPaswword}
+    mainWindow.webContents.once('dom-ready', () => {
+      mainWindow.webContents.send('usernameDataWithoutRam', datas)
+    })
+  }
 })
 
 ipcMain.on('saveRam', (event, data) => {
   if(fs.existsSync(launcherPath + 'infos.json')){
-    let rawdata = fs.readFileSync(launcherPath + 'infos.json');
-		let student = JSON.parse(rawdata);
-    console.log(data)
-    student.options.push({ram: data})
-    let json = JSON.stringify(student)
-    fs.writeFileSync(launcherPath + 'infos.json', json)
-  }else{
-    let infos = {
-      options: [{
-        "ram": data
-      }]
+
+    let rawdata = fs.readFileSync(launcherPath + 'infos.json')
+
+    let student = JSON.parse(rawdata);
+
+    if(student.infos[0].ram === data){
+      return false
+    }else{
+      student.infos.push({ram: data})
+      let json = JSON.stringify(student)
+      fs.writeFileSync(launcherPath + 'infos.json', json)
     }
-    let datsa = JSON.stringify(infos)
-    fs.mkdirSync(launcherPath)
+
+  }else{
+
+    let ID = {"infos": [
+      {ram: ram}
+    ]}
+    let datsa = JSON.stringify(ID)
     fs.writeFileSync(launcherPath + 'infos.json', datsa)
+
   }
 })
 

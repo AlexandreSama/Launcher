@@ -1,20 +1,35 @@
 const { Client, Authenticator } = require('minecraft-launcher-core');
 const launcher = new Client();
+const fs = require('fs')
+const path = require('path');
 
-async function launchGame(ram, email, password, javaExePath, RootPath, forgePath, event) {
+async function getRam(launcherPath) {
+  let rawdata = fs.readFileSync(launcherPath + 'infos.json');
+  let student = JSON.parse(rawdata);
+  let ram = student['infos'][1].ram
+
+  console.log(ram)
+
+  return ram
+}
+
+async function launchGame(ram, email, password, javaExePath, RootPath, mainWindow, event) {
+
+  fs.unlinkSync(RootPath + 'modsList.json')
+
     let opts = {
         clientPackage: null,
-        authorization: Authenticator.getAuth(data.email, data.password),
-        root: launcherPath,
-        forge: launcherPath + "forge.jar",
-        javaPath: path.join(launcherJavaPath + 'bin\\java.exe'),
+        authorization: Authenticator.getAuth(email, password),
+        root: RootPath,
+        forge: RootPath + "forge.jar",
+        javaPath: path.join(javaExePath + 'bin\\java.exe'),
         version: {
             number: "1.12.2",
             type: "release"
         },
         memory: {
             max: ram,
-            min: "4000"
+            min: "4G"
         }
     }
 
@@ -33,3 +48,5 @@ async function launchGame(ram, email, password, javaExePath, RootPath, forgePath
       mainWindow.webContents.send('dataMcd', {e})
     })
 }
+
+module.exports = {launchGame, getRam}
