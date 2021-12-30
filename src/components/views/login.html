@@ -1,21 +1,22 @@
 <!doctype html>
 <html lang="en">
-  <head>
-  	<title>Connexion</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<head>
+	<title>Connexion</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
 	<link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
 
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-	
-    <link href="../addons/bootstrap.min.css">
+
+	<link href="../addons/bootstrap.min.css">
 	<link rel="stylesheet" href="../addons/login/login.css">
 
-    <script src="../addons/popper.js"></script>
-	</head>
+	<script src="../addons/popper.js"></script>
+</head>
 
-	<body class="img js-fullheight" style="background-image: url(../images/bg.jpg);">
+<body class="img js-fullheight" style="background-image: url(../images/bg.jpg);">
 	<section class="ftco-section">
 		<div class="container">
 			<div class="row justify-content-center">
@@ -26,44 +27,73 @@
 			<div class="row justify-content-center">
 				<div class="col-md-6 col-lg-4">
 					<div class="login-wrap p-0">
-		      	<h3 class="mb-4 text-center">Déjà un compte ?</h3>
-		      	<form action="#" class="signin-form">
-		      		<div class="form-group">
-		      			<input type="text" class="form-control" placeholder="Email" id="emailField" required>
-		      		</div>
-	            <div class="form-group">
-	              <input id="password-field" type="password" class="form-control" placeholder="Mot de passe" required>
-	              <span toggle="#password-field" class="fa fa-fw fa-eye field-icon toggle-password"></span>
-	            </div>
-	            <div class="form-group">
-	            	<button class="form-control btn btn-primary submit px-3" id="loginBtn">Connexion</button>
-	            </div>
-	            <div class="form-group d-md-flex">
-	            	<div class="w-50">
-		            	<label class="checkbox-wrap checkbox-primary">Se souvenir de moi
-									  <input type="checkbox" checked id="saveID">
-									  <span class="checkmark"></span>
+						<h3 class="mb-4 text-center">Déjà un compte ?</h3>
+						<form action="#" class="signin-form">
+							<div class="form-group">
+								<input type="text" class="form-control" placeholder="Email" id="emailField" required>
+							</div>
+							<div class="form-group">
+								<input id="password-field" type="password" class="form-control"
+									placeholder="Mot de passe" required>
+								<span toggle="#password-field"
+									class="fa fa-fw fa-eye field-icon toggle-password"></span>
+							</div>
+							<div class="form-group">
+								<button class="form-control btn btn-primary submit px-3"
+									id="loginBtn">Connexion</button>
+							</div>
+							<div class="form-group d-md-flex">
+								<div class="w-50">
+									<label class="checkbox-wrap checkbox-primary">Se souvenir de moi
+										<input type="checkbox" checked id="saveID">
+										<span class="checkmark"></span>
 									</label>
 								</div>
 								<div class="w-50 text-md-right">
 									<a href="#" style="color: #fff">Mot de passe oublié ?</a>
 								</div>
-	            </div>
-	          </form>
-	          <p class="w-100 text-center">&mdash; Ou se connecter avec &mdash;</p>
-	          <div class="social d-flex text-center">
-	          	<a href="#" class="px-2 py-2 mr-md-1 rounded"><span class="ion-logo-facebook mr-2"></span> Microsoft</a>
-	          </div>
-		      </div>
+							</div>
+						</form>
+						<p class="w-100 text-center">&mdash; Ou se connecter avec &mdash;</p>
+						<div class="social d-flex text-center">
+							<a href="#" class="px-2 py-2 mr-md-1 rounded"><span class="ion-logo-facebook mr-2"></span>
+								Microsoft</a>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
 	</section>
+	<div id="notification" class="hidden">
+        <p id="message"></p>
+        <button id="close-button" onclick="closeNotification()">Fermer</button>
+        <button id="restart-button" onclick="restartApp()" class="hidden"> Restart</button>
+    </div>
 
 	<script>
 		const ipc = require('electron').ipcRenderer;
 		const remote = require('electron')
 		const fs = require('fs')
+
+
+		const notification = document.getElementById('notification')
+		const message = document.getElementById('message')
+		const restartButton = document.getElementById('restart-button')
+
+		ipc.on('update_available', () => {
+			ipc.removeAllListeners('update_available')
+			message.innerText = 'Une mise a jour du launcher est disponible, je la télécharge pour vous...'
+			notification.classList.remove('hidden')
+		})
+
+		ipc.on('update_downloaded', () => {
+			ipc.removeAllListeners('update_downloaded')
+			message.innerText =
+				'Mise a jour téléchargé avec succés, elle sera installé après un redémarrage. Redémarrer maintenant ?'
+			restartButton.classList.remove('hidden')
+			notification.classList.remove('hidden')
+		})
+
 
 		ipc.on('savedID', (event, data) => {
 			console.log(data)
@@ -74,12 +104,17 @@
 			let email = document.getElementById('emailField').value
 			let password = document.getElementById('password-field').value
 
-			if(email && password){
-				ipc.send('login', {email, password})
-				if(document.getElementById('saveID').checked){
-					ipc.send('saveID', {email})
+			if (email && password) {
+				ipc.send('login', {
+					email,
+					password
+				})
+				if (document.getElementById('saveID').checked) {
+					ipc.send('saveID', {
+						email
+					})
 				}
-			}else{
+			} else {
 				remote.dialog.showErrorBox('Erreur !', 'Veuillez écrire un mot de passe ou un email !')
 			}
 		})
@@ -88,8 +123,7 @@
 			Remote.dialog.showErrorBox('Erreur !', 'Veuillez vérifier votre mot de passe ou votre email !')
 		})
 	</script>
-	<script>window.$ = window.jQuery = require('jquery');</script>
-	<script src=../addons/login/login.js></script>
-	</body>
-</html>
-
+	<script>
+		window.$ = window.jQuery = require('jquery');
+	</script>
+	<script src=../addons/login/login.js> </script> </body> </html>
