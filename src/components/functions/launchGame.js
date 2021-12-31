@@ -40,12 +40,14 @@ async function launchGame(ram, email, password, javaExePath, RootPath, mainWindo
       let task = e.task
       let total = e.total
       event.sender.send('dataDownload', ({type, task, total}))
+      console.log(e)
     })
     launcher.on('debug', (e) => {
       mainWindow.webContents.send('dataMc', {e})
     })
     launcher.on('data', (e) => {
       mainWindow.webContents.send('dataMcd', {e})
+      console.log(e)
     })
 }
 

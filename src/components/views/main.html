@@ -69,7 +69,10 @@
             </div>
           </div>
         </div>
-          <p id="downloadProgress" style="position: absolute; bottom: 20px; right: 650px; color: black; font-size: large;"></p>
+          <p id="downloadProgress" style="position: absolute; bottom: 130px; right: 728px; color: black; font-size: large;"></p>
+          <div class="progress-container">
+            <div class="progress"></div>
+          </div>
         <button class="btn btn-outline-success" style="position: absolute; bottom: 100px; right: 200px;" id="playButton">Jouer !</button>
       </div>
       <div id="notification" class="hidden">
@@ -93,6 +96,13 @@
       const notification = document.getElementById('notification')
       const message = document.getElementById('message')
       const restartButton = document.getElementById('restart-button')
+      const progressbar = document.querySelector(".progress");
+
+
+      const changeProgress = (progress) => {
+        progressbar.style.width = `${progress}%`;
+      };
+
 
       ipc.on('update_available', () => {
         ipc.removeAllListeners('update_available')
@@ -129,7 +139,6 @@
 
       //Get data (username, uuid, email & password) from user
       ipc.on('usernameData', (event, datas) => {
-        console.log(datas)
         document.getElementById('usernamePlayer').innerHTML += datas.username
         document.getElementById('PlayerSkin').style.backgroundImage = `url('https://crafatar.com/avatars/${datas.uuid}')`
         email = datas.email
@@ -142,7 +151,6 @@
       pinger.ping('localhost', 25565, (error, result) => {
         if (error) return console.error(error)
         if(result){
-          console.log(result)
           document.getElementById('serverStat').innerHTML += "Etat du serveur : Allumé !"
           document.getElementById('pingServer').innerHTML += `Ping du serveur : ${result['ping']}`
           document.getElementById('playerStat').innerHTML += `Nombre de joueurs : ${result['players']['online']}`
@@ -168,6 +176,11 @@
       // Get Launch Event
       ipc.on('dataDownload', (event, data) => {
         document.getElementById('downloadProgress').innerHTML = `Téléchargement des ${data.type} : ${data.task} / ${data.total}`
+
+        if(data.type === "assets"){
+          let percent = (data.task / data.total)*100
+          changeProgress(percent)
+        }
       })
 
       ipc.on('message', (event, data) => {

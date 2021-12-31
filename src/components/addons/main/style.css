@@ -8515,4 +8515,26 @@ a[data-toggle="collapse"] {
     cursor: pointer;
     letter-spacing: 2px;
   }
+
+
+  .progress-container {
+    position: absolute; 
+    bottom: 130px; 
+    right: 650px;
+    height: 0.8rem;
+    width: 32rem;
+    border-radius: 0.4rem;
+  
+    background: #000;
+  }
+  
+  .progress-container .progress {
+    height: 100%;
+    width: 0;
+    border-radius: 0.4rem;
+  
+    background: #ff4754;
+  
+    transition: width 0.4s ease;
+  }
   
