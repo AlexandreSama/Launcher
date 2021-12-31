@@ -69,7 +69,7 @@
             </div>
           </div>
         </div>
-          <p id="downloadProgress" style="position: absolute; bottom: 130px; right: 728px; color: black; font-size: large;"></p>
+          <p id="downloadProgress" style="position: absolute; bottom: 130px; right: 728px; color: white; font-size: large;"></p>
           <div class="progress-container">
             <div class="progress"></div>
           </div>
@@ -176,15 +176,24 @@
       // Get Launch Event
       ipc.on('dataDownload', (event, data) => {
         document.getElementById('downloadProgress').innerHTML = `Téléchargement des ${data.type} : ${data.task} / ${data.total}`
+        console.log(data.type)
 
         if(data.type === "assets"){
           let percent = (data.task / data.total)*100
           changeProgress(percent)
+        }else if(data.type === "natives"){
+          let percent = (data.task / data.total)*100
+          changeProgress(percent)
+        }else if(data.type === "classes-maven-custom"){
+          let percent = (data.task / data.total)*100
+          changeProgress(percent)
+        }else if(data.type === "classes-custom"){
+          let percent = (data.task / data.total)*100
+          changeProgress(percent)
+        }else if(data.type === "classes"){
+          let percent = (data.task / data.total)*100
+          changeProgress(percent)
         }
-      })
-
-      ipc.on('message', (event, data) => {
-        document.getElementById('downloadProgress').innerHTML = data
       })
     </script>
   </body>
