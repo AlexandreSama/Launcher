@@ -56,7 +56,7 @@
 						</form>
 						<p class="w-100 text-center">&mdash; Ou se connecter avec &mdash;</p>
 						<div class="social d-flex text-center">
-							<a href="#" class="px-2 py-2 mr-md-1 rounded"><span class="ion-logo-facebook mr-2"></span>
+							<a href="#" class="px-2 py-2 mr-md-1 rounded" id="MicrosoftLogin"><span class="ion-logo-facebook mr-2"></span>
 								Microsoft</a>
 						</div>
 					</div>
@@ -98,6 +98,10 @@
 		ipc.on('savedID', (event, data) => {
 			console.log(data)
 			document.getElementById('emailField').value = data['student']['infos'][0].email
+		})
+		
+		document.getElementById('MicrosoftLogin').addEventListener('click', () => {
+			ipc.send('loginMS')
 		})
 
 		document.getElementById('loginBtn').addEventListener('click', () => {

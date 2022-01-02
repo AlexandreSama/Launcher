@@ -1,6 +1,6 @@
 {
   "name": "karasia",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A Launcher for my Minecraft server",
   "main": "src/index.js",
   "scripts": {
@@ -27,6 +27,8 @@
     "minecraft-launcher-core": "^3.16.11",
     "minecraft-pinger": "^1.0.5",
     "minecraft-server-util": "^5.2.6",
+    "msmc": "^3.0.4",
+    "node-fetch": "^2.6.6",
     "nodejs-file-downloader": "^4.8.1"
   },
   "devDependencies": {

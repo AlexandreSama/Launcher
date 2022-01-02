@@ -137,7 +137,16 @@
         console.log(data)
       })
 
-      //Get data (username, uuid, email & password) from user
+      //Get data from MS User
+      ipc.on('MSData', (event, data) => {
+        console.log(data)
+        document.getElementById('usernamePlayer').innerHTML += data.name
+        document.getElementById('PlayerSkin').style.backgroundImage = `url('https://crafatar.com/avatars/${data.id}')`
+        username = data.name
+        uuid = data.id
+      })
+
+      //Get data from Mojang User
       ipc.on('usernameData', (event, datas) => {
         document.getElementById('usernamePlayer').innerHTML += datas.username
         document.getElementById('PlayerSkin').style.backgroundImage = `url('https://crafatar.com/avatars/${datas.uuid}')`

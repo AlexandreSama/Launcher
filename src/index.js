@@ -6,16 +6,19 @@ const ipcMain = electron.ipcMain
 const { Client, Authenticator } = require('minecraft-launcher-core');
 const fs = require('fs')
 const { autoUpdater } = require('electron-updater');
+const msmc = require("msmc");
+const fetch = require('node-fetch');
 
 const {downloadModsList} = require('./components/functions/downloads')
 const {checkLauncherPaths, checkForge, checkJava, checkMods} = require('./components/functions/checkFolders');
-const { launchGame, getRam } = require('./components/functions/launchGame');
+const { launchGame, getRam, launchGameWithMojang, launchGameWithMS } = require('./components/functions/launchGame');
 
 let mainWindow;
 
 let launcherPath = app.getPath('appData') + '\\KarasiaLauncher\\'
 let launcherModsPath = app.getPath('appData') + '\\KarasiaLauncher\\mods\\'
 let launcherJavaPath = app.getPath('appData') + '\\KarasiaLauncher\\Java\\'
+let MSResult
 
 downloadModsList(launcherPath).then(msg => {
   console.log(msg)
@@ -62,7 +65,27 @@ app.on('activate', () => {
   }
 });
 
-//Login player
+//Login player with MS
+ipcMain.on('loginMS', (event, data) => {
+  msmc.setFetch(fetch)
+  msmc.fastLaunch("raw", (update) => {
+
+  }).then(result => {
+    if (msmc.errorCheck(result)){
+      console.log(result.reason)
+      return;
+    }
+    console.log(result)
+    result.profile
+    MSResult = result
+    mainWindow.loadURL(`file://${__dirname}/components/views/main.html`)
+    mainWindow.webContents.once('dom-ready', () => {
+      mainWindow.webContents.send('MSData', result.profile)
+    })
+  })
+})
+
+//Login player with Mojang
 ipcMain.on('login', (event, data) => {
   Authenticator.getAuth(data.email, data.password).then(e => {
     console.log(e)
@@ -105,17 +128,29 @@ ipcMain.on('saveID', (event, data) => {
 //Launch the Minecraft Client
 ipcMain.on('Play', async (event, data) => {
 
-  checkLauncherPaths(launcherPath, launcherModsPath, launcherJavaPath).then( async result => {
-    if(result === true || "Dossier crée avec succés"){
-      await checkForge(launcherPath, event)
-      await checkMods(launcherPath, launcherModsPath, event)
-      await checkJava(launcherJavaPath, event)
-      await getRam(launcherPath).then(async ram => {
-        await launchGame(ram, data.userEmail, data.userPaswword, launcherJavaPath, launcherPath, mainWindow, event)
-      })
-    }
-  })
-
+  if(MSResult === undefined){
+    checkLauncherPaths(launcherPath, launcherModsPath, launcherJavaPath).then( async result => {
+      if(result === true || "Dossier crée avec succés"){
+        await checkForge(launcherPath, event)
+        await checkMods(launcherPath, launcherModsPath, event)
+        await checkJava(launcherJavaPath, event)
+        await getRam(launcherPath).then(async ram => {
+          await launchGameWithMojang(ram, data.userEmail, data.userPaswword, launcherJavaPath, launcherPath, mainWindow, event)
+        })
+      }
+    })
+  }else{
+    checkLauncherPaths(launcherPath, launcherModsPath, launcherJavaPath).then( async result => {
+      if(result === true || "Dossier crée avec succés"){
+        await checkForge(launcherPath, event)
+        await checkMods(launcherPath, launcherModsPath, event)
+        await checkJava(launcherJavaPath, event)
+        await getRam(launcherPath).then(async ram => {
+          await launchGameWithMS(ram, MSResult, launcherJavaPath, launcherPath, mainWindow, event)
+        })
+      }
+    })
+  }
 })
 
 //Change page
