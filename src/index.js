@@ -11,7 +11,7 @@ const fetch = require('node-fetch');
 
 const {downloadModsList} = require('./components/functions/downloads')
 const {checkLauncherPaths, checkForge, checkJava, checkMods} = require('./components/functions/checkFolders');
-const { launchGame, getRam, launchGameWithMojang, launchGameWithMS } = require('./components/functions/launchGame');
+const { getRam, launchGameWithMojang, launchGameWithMS, searchObj } = require('./components/functions/launchGame');
 
 let mainWindow;
 
@@ -172,18 +172,20 @@ ipcMain.on('GoToSettings', (event, data) => {
 
     let student = JSON.parse(rawdata);
 
-    if(student['infos'][1] === null){
+    let ram = searchObj(student, 'ram')
+
+    if(ram === undefined){
     }else{
-      let datas = {"username" : data.userName, "uuid": data.userUUID, "email": data.userEmail, "password": data.userPaswword, "ram": student['infos'][1]}
+      let datas = {"username" : data.userName, "uuid": data.userUUID, "email": data.userEmail, "password": data.userPaswword}
       mainWindow.webContents.once('dom-ready', () => {
-        mainWindow.webContents.send('usernameDataWithRam', datas)
+        mainWindow.webContents.send('usernameDataWithoutRam', datas)
       })
     }
 
   }else{
-    let datas = {"username" : data.userName, "uuid": data.userUUID, "email": data.userEmail, "password": data.userPaswword}
+    let datas = {"username" : data.userName, "uuid": data.userUUID, "email": data.userEmail, "password": data.userPaswword, "ram": ram}
     mainWindow.webContents.once('dom-ready', () => {
-      mainWindow.webContents.send('usernameDataWithoutRam', datas)
+      mainWindow.webContents.send('usernameDataWithRam', datas)
     })
   }
 })
@@ -204,9 +206,10 @@ ipcMain.on('saveRam', (event, data) => {
     }
 
   }else{
+    console.log(data)
 
     let ID = {"infos": [
-      {ram: data.ram}
+      {ram: data}
     ]}
     let datsa = JSON.stringify(ID)
     fs.writeFileSync(launcherPath + 'infos.json', datsa)
