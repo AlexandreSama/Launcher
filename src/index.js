@@ -206,7 +206,7 @@ ipcMain.on('saveRam', (event, data) => {
   }else{
 
     let ID = {"infos": [
-      {ram: ram}
+      {ram: data.ram}
     ]}
     let datsa = JSON.stringify(ID)
     fs.writeFileSync(launcherPath + 'infos.json', datsa)

@@ -80,6 +80,14 @@
 		const message = document.getElementById('message')
 		const restartButton = document.getElementById('restart-button')
 
+		function closeNotification(){
+        notification.classList.add('hidden')
+		}
+
+		function restartApp(){
+			ipc.send('restart_app')
+		}
+
 		ipc.on('update_available', () => {
 			ipc.removeAllListeners('update_available')
 			message.innerText = 'Une mise a jour du launcher est disponible, je la télécharge pour vous...'

@@ -9,30 +9,47 @@ async function getRam(launcherPath) {
   let student = JSON.parse(rawdata);
   let ram = student['infos'][1].ram
 
-  console.log(ram)
-
   return ram
 }
 
 async function launchGameWithMS(ram, result, javaExePath, RootPath, mainWindow, event) {
 
   fs.unlinkSync(RootPath + 'modsList.json')
+  let opts
 
-    let opts = {
-        clientPackage: null,
-        authorization: msmc.getMCLC().getAuth(result),
-        root: RootPath,
-        forge: RootPath + "forge.jar",
-        javaPath: path.join(javaExePath + 'bin\\java.exe'),
-        version: {
-            number: "1.12.2",
-            type: "release"
-        },
-        memory: {
-            max: ram,
-            min: "4G"
-        }
+  if(ram === undefined){
+    opts = {
+      clientPackage: null,
+      authorization: msmc.getMCLC().getAuth(result),
+      root: RootPath,
+      forge: RootPath + "forge.jar",
+      javaPath: path.join(javaExePath + 'bin\\java.exe'),
+      version: {
+          number: "1.12.2",
+          type: "release"
+      },
+      memory: {
+          max: "6G",
+          min: "4G"
+      }
     }
+  }else{
+    opts = {
+      clientPackage: null,
+      authorization: msmc.getMCLC().getAuth(result),
+      root: RootPath,
+      forge: RootPath + "forge.jar",
+      javaPath: path.join(javaExePath + 'bin\\java.exe'),
+      version: {
+          number: "1.12.2",
+          type: "release"
+      },
+      memory: {
+          max: ram,
+          min: "4G"
+      }
+    }
+  }
 
     launcher.launch(opts);
 

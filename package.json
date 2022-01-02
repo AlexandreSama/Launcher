@@ -1,6 +1,6 @@
 {
   "name": "karasia",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "A Launcher for my Minecraft server",
   "main": "src/index.js",
   "scripts": {
