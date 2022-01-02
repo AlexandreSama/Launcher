@@ -33,7 +33,8 @@ function createWindow () {
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false
-    }
+    },
+    icon: `file://${__dirname}/icon.ico`
   }); // on définit une taille pour notre fenêtre
 
   mainWindow.loadURL(`file://${__dirname}/components/views/login.html`); // on doit charger un chemin absolu
