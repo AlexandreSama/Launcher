@@ -157,7 +157,7 @@
       })
 
       //Get Server Stats
-      pinger.ping('localhost', 25565, (error, result) => {
+      pinger.ping('193.168.146.71', 25565, (error, result) => {
         if (error) return console.error(error)
         if(result){
           document.getElementById('serverStat').innerHTML += "Etat du serveur : Allumé !"
