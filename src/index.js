@@ -15,9 +15,9 @@ const { getRam, launchGameWithMojang, launchGameWithMS, searchObj } = require('.
 
 let mainWindow;
 
-let launcherPath = app.getPath('appData') + '\\KarasiaLauncher\\'
-let launcherModsPath = app.getPath('appData') + '\\KarasiaLauncher\\mods\\'
-let launcherJavaPath = app.getPath('appData') + '\\KarasiaLauncher\\Java\\'
+let launcherPath = app.getPath('appData') + '\\.KarasiaLauncher\\'
+let launcherModsPath = app.getPath('appData') + '\\.KarasiaLauncher\\mods\\'
+let launcherJavaPath = app.getPath('appData') + '\\.KarasiaLauncher\\Java\\'
 let MSResult
 
 downloadModsList(launcherPath).then(msg => {
@@ -42,10 +42,12 @@ function createWindow () {
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
+
+  //Quand la page est prête a être chargé
   mainWindow.once('ready-to-show', () => {
     autoUpdater.checkForUpdatesAndNotify()
-    if(fs.existsSync(app.getPath('appData') + '\\KarasiaLauncher\\infos.json')){
-			let rawdata = fs.readFileSync(app.getPath('appData') + '\\KarasiaLauncher\\infos.json');
+    if(fs.existsSync(launcherPath + '\\infos.json')){
+			let rawdata = fs.readFileSync(launcherPath + '\\infos.json');
 			let student = JSON.parse(rawdata);
       mainWindow.webContents.send('savedID', {student})
 		}
@@ -100,6 +102,7 @@ ipcMain.on('login', (event, data) => {
   })
 })
 
+//Save email
 ipcMain.on('saveID', (event, data) => {
   if(fs.existsSync(launcherPath + 'infos.json')){
 
@@ -191,6 +194,7 @@ ipcMain.on('GoToSettings', (event, data) => {
   }
 })
 
+//Save ram Param
 ipcMain.on('saveRam', (event, data) => {
   if(fs.existsSync(launcherPath + 'infos.json')){
 
@@ -217,6 +221,9 @@ ipcMain.on('saveRam', (event, data) => {
 
   }
 })
+
+
+//Check/Download/Install versions
 
 ipcMain.on('app_version', (event) => {
   event.sender.send('app_version', { version: app.getVersion() });
